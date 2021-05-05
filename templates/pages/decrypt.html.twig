@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% set title = "Here's your secret" %}
+
+{% block stylesheets %}
+  {{ encore_entry_link_tags('decrypt') }}
+{% endblock %}
+
+{% block body %}
+  <h3>Someone sent you a one time secret! 👌</h3>
+  <p>Below is the secret text they sent. Copy and paste it where you need to now. Once you close this page it is gone for good. Permanently.</p>
+  <div class="mb-3">
+    <textarea
+      class="form-control"
+      name="secret"
+      rows="7"
+      data-source="secret"
+      disabled
+    ></textarea>
+  </div>
+{% endblock %}
+
+{% block javascripts %}
+  <script>
+    secret = {
+      data: "{{ secret.data }}",
+      iv: "{{ secret.iv }}"
+    };
+  </script>
+  {{ encore_entry_script_tags('decrypt') }}
+{% endblock %}
