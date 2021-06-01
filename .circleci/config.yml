@@ -3,6 +3,72 @@
 # Check https://circleci.com/docs/2.0/language-php/ for more details
 #
 version: 2
+
+commands:
+  deploy:
+    description: Deploy to an environment
+    parameters:
+      release_path:
+        type: string
+        default: /var/www/www.quickandsecure.com/release/$CIRCLE_BUILD_NUM/
+      releases_to_delete:
+        type: integer
+        default: 5
+    steps:
+      - run:
+          name: Create << parameters.release_path >> folder
+          command: |
+            ssh $SSH_USER@$SSH_HOST "sudo mkdir << parameters.release_path >>; sudo chown $SSH_USER:$SSH_USER << parameters.release_path >>"
+      - run:
+          name: Rsync contents
+          command: |
+            rsync -az --delete --exclude='.git' --filter=":- .gitignore" . $SSH_USER@$SSH_HOST:<< parameters.release_path >>
+      - run:
+          name: Copy console binary
+          command: |
+            scp bin/console $SSH_USER@$SSH_HOST:<< parameters.release_path >>/bin/
+      - run:
+          name: Generate .env.local
+          environment:
+            - APP_DEBUG: false
+          command: |
+            echo "APP_DEBUG=$APP_DEBUG" > .env.local
+            echo "APP_ENV=$APP_ENV" >> .env.local
+            echo "APP_SECRET=$APP_SECRET" >> .env.local
+            echo "DATABASE_URL=$DATABASE_URL" >> .env.local
+      - run:
+          name: Copy .env.local
+          command: |
+            scp ./.env.local $SSH_USER@$SSH_HOST:<< parameters.release_path >>
+      - run:
+          name: Create var folder
+          command: |
+            ssh $SSH_USER@$SSH_HOST "sudo mkdir << parameters.release_path >>/var"
+      - run:
+          name: Chown to quickandsecure, Chmod to 765 (except the keys)
+          command: |
+            ssh $SSH_USER@$SSH_HOST "sudo chown quickandsecure:quickandsecure -R << parameters.release_path >>; sudo chmod 765 -R << parameters.release_path >>"
+      - run:
+          name: Warm cache
+          command: |
+            ssh $SSH_USER@$SSH_HOST "sudo -u quickandsecure << parameters.release_path >>/bin/console cache:warmup --env $APP_ENV"
+      - run:
+          name: Enable new release
+          command: |
+            ssh $SSH_USER@$SSH_HOST "cd << parameters.release_path >>/../; sudo rm -f current; sudo ln -s $CIRCLE_BUILD_NUM current"
+      - run:
+          name: Delete old releases
+          command: |
+            ssh $SSH_USER@$SSH_HOST "cd << parameters.release_path >>/../; ls -tp | grep -E '[0-9]+' | tail -n +<< parameters.releases_to_delete >> | xargs -I {} sudo rm -r -- {}"
+      - run:
+          name: Run DB mirations
+          command: |
+            ssh $SSH_USER@$SSH_HOST "cd << parameters.release_path >>; sudo -u quickandsecure bin/console doctrine:migrations:migrate --no-interaction --env=$APP_ENV"
+      - run:
+          name: Restart FPM
+          command: |
+            ssh $SSH_USER@$SSH_HOST "sudo service php7.4-fpm restart"
+
 jobs:
   build:
     docker:
@@ -48,3 +114,4 @@ jobs:
           paths:
             - node_modules
       - run: npm run build
+      - deploy
