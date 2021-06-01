@@ -76,7 +76,7 @@ jobs:
     steps:
       - run: echo "These are not the tests you are looking for"
 
-  build:
+  build-and-deploy-job:
     docker:
       # Specify the version you desire here
       - image: circleci/php:7.4-node-browsers
@@ -116,21 +116,11 @@ jobs:
 
 workflows:
   version: 2
-  test:
-    jobs:
-      - test:
-          context: test
   build-and-deploy:
     when:
       equal: [ main, << pipeline.git.branch >> ]
     jobs:
-      - test:
-          context: test
-      - build:
+      - build-and-deploy-job:
           context: stage
           requires:
             - test
-      - deploy:
-          context: stage
-          requires:
-            - build
