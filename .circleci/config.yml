@@ -15,6 +15,7 @@ commands:
         type: integer
         default: 5
     steps:
+      - run: echo $SSH_USER @ $SSH_HOST
       - run:
           name: Create << parameters.release_path >> folder
           command: |
