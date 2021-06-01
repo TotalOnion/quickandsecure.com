@@ -122,5 +122,3 @@ workflows:
     jobs:
       - build-and-deploy-job:
           context: stage
-          requires:
-            - test
