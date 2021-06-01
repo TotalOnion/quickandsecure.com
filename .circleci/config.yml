@@ -120,5 +120,4 @@ workflows:
     when:
       equal: [ main, << pipeline.git.branch >> ]
     jobs:
-      - build-and-deploy-job:
-          context: stage
+      - build-and-deploy-job
