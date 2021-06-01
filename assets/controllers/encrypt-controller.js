@@ -8,7 +8,6 @@ const state = {
 };
 
 export function init(args) {
-  window.test = state;
   /*
   Generate an encryption key, then set up event listeners
   on the "Encrypt" and "Decrypt" buttons.
