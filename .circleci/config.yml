@@ -81,15 +81,6 @@ jobs:
       # Specify the version you desire here
       - image: circleci/php:7.4-node-browsers
 
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # Using the RAM variation mitigates I/O contention
-      # for database intensive operations.
-      # - image: circleci/mysql:5.7-ram
-      #
-      # - image: redis:2.8.19
-
     steps:
       - checkout
 
@@ -120,34 +111,6 @@ jobs:
           paths:
             - node_modules
       - run: npm run build
-      - persist_to_workspace:
-          root: ./
-          paths:
-            - .env
-            - .env.stage
-            - .env.prod
-            - assets
-            - bin
-            - build
-            - composer.json
-            - composer.lock
-            - config
-            - fixtures
-            - google-walletobjects
-            - keys
-            - node_modules
-            - package.json
-            - public
-            - src
-            - templates
-            - translations
-            - vendor
-
-  deploy:
-    executor: vm
-    steps:
-      - attach_workspace:
-          at: /tmp/workspace
       - deploy:
           release_path: /var/www/safeshare.site/release/$CIRCLE_BUILD_NUM/
 
