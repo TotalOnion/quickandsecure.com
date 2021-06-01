@@ -10,7 +10,7 @@ commands:
     parameters:
       release_path:
         type: string
-        default: /var/www/www.quickandsecure.com/release/$CIRCLE_BUILD_NUM/
+        default: /var/www/safeshare.site/release/$CIRCLE_BUILD_NUM/
       releases_to_delete:
         type: integer
         default: 5
@@ -45,13 +45,13 @@ commands:
           command: |
             ssh $SSH_USER@$SSH_HOST "sudo mkdir << parameters.release_path >>/var"
       - run:
-          name: Chown to quickandsecure, Chmod to 765 (except the keys)
+          name: Chown to safeshare, Chmod to 765 (except the keys)
           command: |
-            ssh $SSH_USER@$SSH_HOST "sudo chown quickandsecure:quickandsecure -R << parameters.release_path >>; sudo chmod 765 -R << parameters.release_path >>"
+            ssh $SSH_USER@$SSH_HOST "sudo chown safeshare:safeshare -R << parameters.release_path >>; sudo chmod 765 -R << parameters.release_path >>"
       - run:
           name: Warm cache
           command: |
-            ssh $SSH_USER@$SSH_HOST "sudo -u quickandsecure << parameters.release_path >>/bin/console cache:warmup --env $APP_ENV"
+            ssh $SSH_USER@$SSH_HOST "sudo -u safeshare << parameters.release_path >>/bin/console cache:warmup --env $APP_ENV"
       - run:
           name: Enable new release
           command: |
@@ -63,13 +63,19 @@ commands:
       - run:
           name: Run DB mirations
           command: |
-            ssh $SSH_USER@$SSH_HOST "cd << parameters.release_path >>; sudo -u quickandsecure bin/console doctrine:migrations:migrate --no-interaction --env=$APP_ENV"
+            ssh $SSH_USER@$SSH_HOST "cd << parameters.release_path >>; sudo -u safeshare bin/console doctrine:migrations:migrate --no-interaction --env=$APP_ENV"
       - run:
           name: Restart FPM
           command: |
             ssh $SSH_USER@$SSH_HOST "sudo service php7.4-fpm restart"
 
 jobs:
+  test:
+    docker:
+      - image: circleci/node
+    steps:
+      - run: echo "These are not the tests you are looking for"
+
   build:
     docker:
       # Specify the version you desire here
@@ -114,4 +120,54 @@ jobs:
           paths:
             - node_modules
       - run: npm run build
-      - deploy
+      - persist_to_workspace:
+          root: ./
+          paths:
+            - .env
+            - .env.stage
+            - .env.prod
+            - assets
+            - bin
+            - build
+            - composer.json
+            - composer.lock
+            - config
+            - fixtures
+            - google-walletobjects
+            - keys
+            - node_modules
+            - package.json
+            - public
+            - src
+            - templates
+            - translations
+            - vendor
+
+  deploy:
+    executor: vm
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+      - deploy:
+          release_path: /var/www/safeshare.site/release/$CIRCLE_BUILD_NUM/
+
+workflows:
+  version: 2
+  test:
+    jobs:
+      - test:
+          context: test
+  build-and-deploy:
+    when:
+      equal: [ main, << pipeline.git.branch >> ]
+    jobs:
+      - test:
+          context: test
+      - build:
+          context: stage
+          requires:
+            - test
+      - deploy:
+          context: stage
+          requires:
+            - build
