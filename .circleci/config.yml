@@ -23,6 +23,8 @@ commands:
           name: Create << parameters.release_path >> folder
           command: |
             ssh $PROJECT_SSH_USER@$PROJECT_SSH_HOST "sudo mkdir << parameters.release_path >>; sudo chown $PROJECT_SSH_USER:$PROJECT_SSH_USER << parameters.release_path >>"
+      - run: ls -hal
+      - run: pwd
       - run:
           name: Rsync contents
           command: |
