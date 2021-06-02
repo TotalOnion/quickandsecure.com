@@ -15,19 +15,18 @@ commands:
         type: integer
         default: 5
     steps:
-      - run: echo $SSH_USER @ $SSH_HOST
       - run:
           name: Create << parameters.release_path >> folder
           command: |
-            ssh $SSH_USER@$SSH_HOST "sudo mkdir << parameters.release_path >>; sudo chown $SSH_USER:$SSH_USER << parameters.release_path >>"
+            ssh $PROJECT_SSH_USER@$PROJECT_SSH_HOST "sudo mkdir << parameters.release_path >>; sudo chown $PROJECT_SSH_USER:$PROJECT_SSH_USER << parameters.release_path >>"
       - run:
           name: Rsync contents
           command: |
-            rsync -az --delete --exclude='.git' --filter=":- .gitignore" . $SSH_USER@$SSH_HOST:<< parameters.release_path >>
+            rsync -az --delete --exclude='.git' --filter=":- .gitignore" . $PROJECT_SSH_USER@$PROJECT_SSH_HOST:<< parameters.release_path >>
       - run:
           name: Copy console binary
           command: |
-            scp bin/console $SSH_USER@$SSH_HOST:<< parameters.release_path >>/bin/
+            scp bin/console $PROJECT_SSH_USER@$PROJECT_SSH_HOST:<< parameters.release_path >>/bin/
       - run:
           name: Generate .env.local
           environment:
@@ -40,35 +39,35 @@ commands:
       - run:
           name: Copy .env.local
           command: |
-            scp ./.env.local $SSH_USER@$SSH_HOST:<< parameters.release_path >>
+            scp ./.env.local $PROJECT_SSH_USER@$PROJECT_SSH_HOST:<< parameters.release_path >>
       - run:
           name: Create var folder
           command: |
-            ssh $SSH_USER@$SSH_HOST "sudo mkdir << parameters.release_path >>/var"
+            ssh $PROJECT_SSH_USER@$PROJECT_SSH_HOST "sudo mkdir << parameters.release_path >>/var"
       - run:
           name: Chown to safeshare, Chmod to 765 (except the keys)
           command: |
-            ssh $SSH_USER@$SSH_HOST "sudo chown safeshare:safeshare -R << parameters.release_path >>; sudo chmod 765 -R << parameters.release_path >>"
+            ssh $PROJECT_SSH_USER@$PROJECT_SSH_HOST "sudo chown safeshare:safeshare -R << parameters.release_path >>; sudo chmod 765 -R << parameters.release_path >>"
       - run:
           name: Warm cache
           command: |
-            ssh $SSH_USER@$SSH_HOST "sudo -u safeshare << parameters.release_path >>/bin/console cache:warmup --env $APP_ENV"
+            ssh $PROJECT_SSH_USER@$PROJECT_SSH_HOST "sudo -u safeshare << parameters.release_path >>/bin/console cache:warmup --env $APP_ENV"
       - run:
           name: Enable new release
           command: |
-            ssh $SSH_USER@$SSH_HOST "cd << parameters.release_path >>/../; sudo rm -f current; sudo ln -s $CIRCLE_BUILD_NUM current"
+            ssh $PROJECT_SSH_USER@$PROJECT_SSH_HOST "cd << parameters.release_path >>/../; sudo rm -f current; sudo ln -s $CIRCLE_BUILD_NUM current"
       - run:
           name: Delete old releases
           command: |
-            ssh $SSH_USER@$SSH_HOST "cd << parameters.release_path >>/../; ls -tp | grep -E '[0-9]+' | tail -n +<< parameters.releases_to_delete >> | xargs -I {} sudo rm -r -- {}"
+            ssh $PROJECT_SSH_USER@$PROJECT_SSH_HOST "cd << parameters.release_path >>/../; ls -tp | grep -E '[0-9]+' | tail -n +<< parameters.releases_to_delete >> | xargs -I {} sudo rm -r -- {}"
       - run:
           name: Run DB mirations
           command: |
-            ssh $SSH_USER@$SSH_HOST "cd << parameters.release_path >>; sudo -u safeshare bin/console doctrine:migrations:migrate --no-interaction --env=$APP_ENV"
+            ssh $PROJECT_SSH_USER@$PROJECT_SSH_HOST "cd << parameters.release_path >>; sudo -u safeshare bin/console doctrine:migrations:migrate --no-interaction --env=$APP_ENV"
       - run:
           name: Restart FPM
           command: |
-            ssh $SSH_USER@$SSH_HOST "sudo service php7.4-fpm restart"
+            ssh $PROJECT_SSH_USER@$PROJECT_SSH_HOST "sudo service php7.4-fpm restart"
 
 jobs:
   test:
