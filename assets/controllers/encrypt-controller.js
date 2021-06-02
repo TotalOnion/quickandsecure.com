@@ -39,6 +39,33 @@ export function init(args) {
       { passive: true }
     );
   });
+
+  document
+    .querySelectorAll('[data-action="copy-to-clipboard"]')
+    .forEach(
+      (clipboardButton) => {
+        clipboardButton.addEventListener(
+          'click',
+          (event) => {
+            let sourceCssSelector = '[data-source="'+ clipboardButton.getAttribute('data-copy-source') +'"]';
+
+            utils
+              .copyTextToClipboard(
+                document
+                  .querySelector(sourceCssSelector)
+                  .innerText
+              )
+            ;
+
+            clipboardButton.innerHTML = clipboardButton.getAttribute('data-success-message');
+          },
+          {
+            passive: true
+          }
+        )
+      }
+    )
+  ;
 };
 
 function generateSlug() {

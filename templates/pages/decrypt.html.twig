@@ -18,6 +18,19 @@
       disabled
     ></textarea>
   </div>
+  <div class="row">
+    <div class="col">
+      <button
+        type="button"
+        class="btn btn-primary btn-lg"
+        data-action="copy-to-clipboard"
+        data-copy-source="secret"
+        data-success-message="Copied!"
+      >
+        Copy to your clipboard
+      </button>
+    </div>
+  </div>
 {% endblock %}
 
 {% block javascripts %}

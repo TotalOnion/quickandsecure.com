@@ -8,18 +8,15 @@
 
 {% block body %}
   <div id="start">
-    <h3>
-      Sharing passwords and other sensitive information by email or chat message is A Bad Idea&trade;
-      <br />
-      Use a one time secret link instead!👌
-    </h3>
+    <h3>Sharing passwords and other sensitive information by email or chat message is A Really Bad Idea&trade;</h3>
+    <h3>Use a one time secret link instead!👌</h3>
     <ol>
-      <li>Paste your secret below, or click the handy "generate a password" button</li>
-      <li>Click encrypt and your message is encrypted <em>✨in your browser✨</em> using a randomly generated key</li>
+      <li>Paste your password or secret below</li>
+      <li>Click "<em>Create my secret link!</em>" and your message is encrypted <em>✨in your browser✨</em>  using a randomly generated key</li>
       <li>Share your new secret link with the recipient</li>
       <li>When they open it they will see your secret once, and we delete it forever</li>
     </ol>
-    <p>The best bit? We never see your secret, and we never see your encryption key, all we store is the encrypted data.</p>
+    <p>(The best bit? We <em>never</em> see your secret, and we <em>never</em> see your encryption key, all we store is the encrypted data that your browser sends us.)</p>
     <div class="mb-3">
       <textarea
         class="form-control"
@@ -35,10 +32,13 @@
     </div>
     <div class="row">
       <div class="col">
-        <button type="button" class="btn btn-primary btn-lg" data-action="create">Create secret link</button>
-      </div>
-      <div class="col">
-        <button type="button" class="btn btn-secondary btn-sm" data-actiojn="add-password">Generate a good password</button>
+        <button
+          type="button"
+          class="btn btn-primary btn-lg"
+          data-action="create"
+        >
+          Create my secret link!
+        </button>
       </div>
     </div>
   </div>
@@ -47,6 +47,19 @@
     <h3 class="display-3">Hurrah! Here's your link 🚀</h3>
     <div class="card">
       <div class="card-body" data-source="full-link"></div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <button
+          type="button"
+          class="btn btn-primary btn-lg"
+          data-action="copy-to-clipboard"
+          data-copy-source="full-link"
+          data-success-message="Copied!"
+        >
+          Copy to your clipboard
+        </button>
+      </div>
     </div>
   </div>
   

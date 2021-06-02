@@ -1,0 +1,57 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto&family=Roboto+Slab&display=swap');
+
+body {
+  font-family: var(--body-font);
+  color: var(--color-black);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+  font-family: var(--heading-font);
+  max-width: 972px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+.header {
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  padding-top: var(--standard-padding);
+  padding-bottom: var(--standard-padding);
+
+  .logo {
+    background: transparent no-repeat center center url(../img/safeshare_logo.svg);
+    background-size: cover;
+    text-indent: 110%;
+    white-space: nowrap;
+    overflow: hidden;
+    width: 100%;
+    height: 0;
+    padding-bottom: 100%;
+    max-width: 200px;
+    max-height: 200px;
+    transform: rotate(10deg);
+  }
+}
+
+.body {
+  margin-bottom: 4em;
+}
+
+.btn-primary {
+  background-color: var(--color-red);
+  border-color: var(--color-red);
+
+  &:hover,
+  &:active,
+  &:focus {
+    background-color: var(--color-red-hover);
+    border-color: var(--color-red-hover);
+    outline-color: transparent;
+  }
+}

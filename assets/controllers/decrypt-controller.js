@@ -1,4 +1,5 @@
 import { base64 } from "rfc4648";
+import * as utils from './utils.js';
 
 const state = {
   outputElement: document.querySelector('[data-source="secret"]')
@@ -28,6 +29,34 @@ export function init(secret) {
         console.log(error);
       }
     )
+  ;
+
+  document
+    .querySelectorAll('[data-action="copy-to-clipboard"]')
+    .forEach(
+      (clipboardButton) => {
+        clipboardButton.addEventListener(
+          'click',
+          (event) => {
+            let sourceCssSelector = '[data-source="'+ clipboardButton.getAttribute('data-copy-source') +'"]';
+
+            utils
+              .copyTextToClipboard(
+                document
+                  .querySelector(sourceCssSelector)
+                  .value
+              )
+            ;
+
+            clipboardButton.innerHTML = clipboardButton.getAttribute('data-success-message');
+          },
+          {
+            passive: true
+          }
+        )
+      }
+    )
+  ;
 }
 
 async function decryptMessage() {
