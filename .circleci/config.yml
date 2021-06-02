@@ -28,7 +28,7 @@ commands:
       - run:
           name: Rsync contents
           command: |
-            rsync -az --delete --exclude='.git' --filter=":- .gitignore" . $PROJECT_SSH_USER@$PROJECT_SSH_HOST:<< parameters.release_path >>
+            rsync -az --delete --exclude='.git' . $PROJECT_SSH_USER@$PROJECT_SSH_HOST:<< parameters.release_path >>
       - run:
           name: Copy console binary
           command: |
