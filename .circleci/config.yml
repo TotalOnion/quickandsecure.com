@@ -23,8 +23,6 @@ commands:
           name: Create << parameters.release_path >> folder
           command: |
             ssh $PROJECT_SSH_USER@$PROJECT_SSH_HOST "sudo mkdir << parameters.release_path >>; sudo chown $PROJECT_SSH_USER:$PROJECT_SSH_USER << parameters.release_path >>"
-      - run: ls -hal
-      - run: pwd
       - run:
           name: Rsync contents
           command: |
@@ -118,25 +116,6 @@ jobs:
           paths:
             - node_modules
       - run: npm run build
-      - run: pwd
-      - run: ls -hal
-      - persist_to_workspace:
-          root: ./
-          paths:
-            - .env
-            - assets
-            - bin
-            - build
-            - composer.json
-            - composer.lock
-            - config
-            - fixtures
-            - node_modules
-            - package.json
-            - public
-            - src
-            - templates
-            - vendor
       - deploy:
           release_path: /var/www/safeshare.site/release/$CIRCLE_BUILD_NUM/
 
