@@ -1,3 +1,5 @@
+###> OS crap ###
+.DS_Store
 
 ###> symfony/framework-bundle ###
 /.env.local
