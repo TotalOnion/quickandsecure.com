@@ -16,6 +16,10 @@ commands:
         default: 5
     steps:
       - run:
+          name: Add safeshare.com to the known_hosts file
+          command: |
+            ssh-keyscan $PROJECT_SSH_HOST >> ~/.ssh/known_hosts
+      - run:
           name: Create << parameters.release_path >> folder
           command: |
             ssh $PROJECT_SSH_USER@$PROJECT_SSH_HOST "sudo mkdir << parameters.release_path >>; sudo chown $PROJECT_SSH_USER:$PROJECT_SSH_USER << parameters.release_path >>"
