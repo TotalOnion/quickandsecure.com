@@ -116,6 +116,23 @@ jobs:
           paths:
             - node_modules
       - run: npm run build
+      - persist_to_workspace:
+          root: ./
+          paths:
+            - .env
+            - assets
+            - bin
+            - build
+            - composer.json
+            - composer.lock
+            - config
+            - fixtures
+            - node_modules
+            - package.json
+            - public
+            - src
+            - templates
+            - vendor
       - deploy:
           release_path: /var/www/safeshare.site/release/$CIRCLE_BUILD_NUM/
 
