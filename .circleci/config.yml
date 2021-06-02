@@ -116,6 +116,8 @@ jobs:
           paths:
             - node_modules
       - run: npm run build
+      - run: pwd
+      - run: ls -hal
       - persist_to_workspace:
           root: ./
           paths:
