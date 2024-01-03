@@ -4,9 +4,10 @@ namespace App\Controller;
 
 use App\Entity\Secret;
 use App\Repository\SecretRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/api/v1')]
@@ -14,6 +15,7 @@ class ApiController extends AbstractController
 {
      #[Route('/secret/{slug}', name:'secret', methods:['POST'], requirements:['slug'=>'^[a-zA-Z0-9]{7}$'])]
     public function create(
+        EntityManagerInterface $entityManager,
         SecretRepository $secretRepository,
         Request $request,
         string $slug
@@ -41,7 +43,6 @@ class ApiController extends AbstractController
             $secret->setData($payload->data);
             $secret->setIv($payload->iv);
 
-            $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($secret);
             $entityManager->flush();
 
