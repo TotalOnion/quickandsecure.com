@@ -9,17 +9,13 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class FrontendController extends AbstractController
 {
-    /**
-     * @Route("/", name="homepage")
-     */
+    #[Route("/")]
     public function homepage(): Response
     {
         return $this->render('pages/index.html.twig');
     }
 
-    /**
-     * @Route("/{slug}", name="decrypt", requirements={"slug"="^[a-zA-Z0-9]{7}$"})
-     */
+    #[Route("/{slug}", name:"decrypt", requirements:['slug'=>'^[a-zA-Z0-9]{7}$'])]
     public function decrypt(
         SecretRepository $secretRepository,
         string $slug

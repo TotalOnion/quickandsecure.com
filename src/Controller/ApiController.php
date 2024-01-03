@@ -9,14 +9,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route("/api/v1")
- */
+#[Route('/api/v1')]
 class ApiController extends AbstractController
 {
-    /**
-     * @Route("/secret/{slug}", name="secret", methods={"POST"}, requirements={"slug"="^[a-zA-Z0-9]{7}$"})
-     */
+     #[Route('/secret/{slug}', name:'secret', methods:['POST'], requirements:['slug'=>'^[a-zA-Z0-9]{7}$'])]
     public function create(
         SecretRepository $secretRepository,
         Request $request,
