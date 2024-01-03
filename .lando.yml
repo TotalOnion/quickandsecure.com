@@ -1,0 +1,9 @@
+name: quickshare
+recipe: symfony
+config:
+  webroot: public
+  config:
+    vhosts: .lando/apache.conf
+services:
+  appserver:
+    type: php:8.2
