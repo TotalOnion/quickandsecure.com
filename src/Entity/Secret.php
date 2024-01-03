@@ -3,50 +3,36 @@
 namespace App\Entity;
 
 use App\Repository\SecretRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass=SecretRepository::class)
- * @ORM\Table(name="secret",indexes={@ORM\Index(name="slug_idx", columns={"slug"})})
- * @ORM\HasLifecycleCallbacks()
- */
+#[ORM\Entity(repositoryClass: SecretRepository::class)]
+#[ORM\Table(name:"secret")]
+#[ORM\Index(name:"slug_idx", columns:["slug"])]
+#[ORM\HasLifecycleCallbacks()]
 class Secret
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
-    private $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id;
 
-    /**
-     * @ORM\Column(type="string", length=7, nullable=true)
-     */
-    private $slug;
+    #[ORM\Column(type: Types::STRING, length:7, nullable: true)]
+    private ?string $slug;
 
-    /**
-     * @ORM\Column(type="string", length=6000, nullable=true)
-     */
-    private $data;
+    #[ORM\Column(type: Types::STRING, length:6000, nullable: true)]
+    private ?string $data;
 
-    /**
-     * @ORM\Column(type="datetime")
-     */
-    private $createdOn;
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTimeInterface $createdOn = null;
 
-    /**
-     * @ORM\Column(type="string", length=20, nullable=true)
-     */
+    #[ORM\Column(type: Types::STRING, length:20, nullable: true)]
     private $iv;
 
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
-    private $destroyedOn;
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $destroyedOn;
 
-    /**
-     * @ORM\PrePersist
-     */
+    #[ORM\PrePersist]
     public function setCreatedOnValue()
     {
         $this->createdOn = new \DateTime();
