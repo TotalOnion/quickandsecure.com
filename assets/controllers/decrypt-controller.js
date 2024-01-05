@@ -5,32 +5,11 @@ const state = {
   outputElement: document.querySelector('[data-source="secret"]')
 };
 
-export function init(secret) {
-  let rawKey = base64.parse(location.hash.substr(1));
-
-  state.iv = base64.parse(secret.iv);
-  state.ciphertext = base64.parse(secret.data);
+export function init() {
   
-  window.crypto.subtle
-    .importKey(
-      'raw',
-      rawKey,
-      "AES-GCM",
-      true,
-      ["encrypt", "decrypt"]
-    ).then(
-      key => {
-        state.key = key;
-        decryptMessage();
-      },
-      error => {
-        // TODO: error handling
-        console.log('nay');
-        console.log(error);
-      }
-    )
-  ;
+  // TODO: ensure the browser can do the decryption, and display a message if not.
 
+  // Attach the copy to clipboard handler
   document
     .querySelectorAll('[data-action="copy-to-clipboard"]')
     .forEach(
@@ -57,6 +36,55 @@ export function init(secret) {
       }
     )
   ;
+
+  loadSecret( location.pathname.substring(1) );
+}
+
+function loadSecret( slug ) {
+  let xhr = new XMLHttpRequest();
+  xhr.open('GET', '/api/v1/secret/' + slug, true);
+  xhr.setRequestHeader('Content-Type', 'application/json');
+  xhr.onreadystatechange = function() {
+    if(xhr.readyState === XMLHttpRequest.DONE) {
+      switch(xhr.status) {
+        case 200:
+          const payload = JSON.parse(xhr.response);
+          state.iv = base64.parse( payload.iv );
+          state.ciphertext = base64.parse( payload.data );
+
+          const rawKey = base64.parse(location.hash.substring(1));
+  
+          window.crypto.subtle
+            .importKey(
+              'raw',
+              rawKey,
+              "AES-GCM",
+              true,
+              ["encrypt", "decrypt"]
+            ).then(
+              key => {
+                state.key = key;
+                decryptMessage();
+              },
+              error => {
+                // TODO: error handling
+                console.log('nay');
+                console.log(error);
+              }
+            )
+          ;
+          
+          break;
+
+        case 500:
+        default:
+          utils.displayErrorMessage(state.textareaElement.getAttribute('error-server-error'));
+          break;
+      }
+    }
+  };
+  
+  xhr.send();
 }
 
 async function decryptMessage() {

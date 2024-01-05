@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/api/v1')]
 class ApiController extends AbstractController
 {
-     #[Route('/secret/{slug}', name:'secret', methods:['POST'], requirements:['slug'=>'^[a-zA-Z0-9]{7}$'])]
+    #[Route('/secret/{slug}', name:'create_secret', methods:['POST'], requirements:['slug'=>'^[a-zA-Z0-9]{7}$'])]
     public function create(
         EntityManagerInterface $entityManager,
         SecretRepository $secretRepository,
@@ -50,5 +50,39 @@ class ApiController extends AbstractController
         } catch (\Exception $e) {
             return new Response(null, RESPONSE::HTTP_INTERNAL_SERVER_ERROR);
         }
+    }
+
+    #[Route('/secret/{slug}', name:'get_secret', methods:['GET'], requirements:['slug'=>'^[a-zA-Z0-9]{7}$'])]
+    public function get(
+        EntityManagerInterface $entityManager,
+        SecretRepository $secretRepository,
+        Request $request,
+        string $slug
+    ): Response
+    {
+        $secret = $secretRepository->findOneBySlug($slug);
+        if (!$secret) {
+            return new Response(null, RESPONSE::HTTP_NOT_FOUND);
+        }
+
+        if ( $secret->getDestroyedOn() ) {
+            $responseData = [
+                'message' => sprintf('This secret was read, and destroyed on %s UTC.', $secret->getDestroyedOn()->format('Y-m-d h:i:s'))
+            ];
+            return new Response(json_encode($responseData), RESPONSE::HTTP_GONE);
+        }
+
+        $responseData = [
+            'data' => $secret->getData(),
+            'iv' => $secret->getIv(),
+        ];
+
+        $secret->setDestroyedOn( new \DateTime() );
+        $secret->setData( null );
+        $secret->setIv( null );
+        $entityManager->persist( $secret );
+        $entityManager->flush();
+
+        return new Response(json_encode($responseData), RESPONSE::HTTP_OK);
     }
 }

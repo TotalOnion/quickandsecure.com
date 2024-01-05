@@ -34,11 +34,5 @@
 {% endblock %}
 
 {% block javascripts %}
-  <script>
-    secret = {
-      data: "{{ secret.data }}",
-      iv: "{{ secret.iv }}"
-    };
-  </script>
   {{ encore_entry_script_tags('decrypt') }}
 {% endblock %}
