@@ -41,6 +41,7 @@ export function init() {
 }
 
 function loadSecret( slug ) {
+  let payload = {};
   let xhr = new XMLHttpRequest();
   xhr.open('GET', '/api/v1/secret/' + slug, true);
   xhr.setRequestHeader('Content-Type', 'application/json');
@@ -48,7 +49,7 @@ function loadSecret( slug ) {
     if(xhr.readyState === XMLHttpRequest.DONE) {
       switch(xhr.status) {
         case 200:
-          const payload = JSON.parse(xhr.response);
+          payload = JSON.parse(xhr.response);
           state.iv = base64.parse( payload.iv );
           state.ciphertext = base64.parse( payload.data );
 
@@ -74,6 +75,11 @@ function loadSecret( slug ) {
             )
           ;
           
+          break;
+
+        case 410:
+          payload = JSON.parse(xhr.response);
+          utils.displayErrorMessage( payload.message );
           break;
 
         case 500:

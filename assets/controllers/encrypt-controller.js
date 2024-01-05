@@ -165,6 +165,4 @@ function displaySuccess() {
   document.querySelector('[data-source="full-link"]').innerHTML = 
     location.protocol + '//' + location.host + '/' + state.slug + '#' + state.rawKey;
   ;
-
-  window.test = state;
 }
