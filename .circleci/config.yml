@@ -83,7 +83,7 @@ jobs:
   build-and-deploy-job:
     docker:
       # Specify the version you desire here
-      - image: circleci/php:7.4-node-browsers
+      - image: cimg/php:8.2-node-browsers
 
     steps:
       - checkout
