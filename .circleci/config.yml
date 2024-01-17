@@ -47,15 +47,15 @@ commands:
       - run:
           name: Create var folder
           command: |
-            ssh $PROJECT_SSH_USER@$PROJECT_SSH_HOST "sudo mkdir << parameters.release_path >>/var"
+            ssh $PROJECT_SSH_USER@$PROJECT_SSH_HOST "sudo mkdir << parameters.release_path >>var"
       - run:
-          name: Chown to safeshare, Chmod to 765 (except the keys)
+          name: Chmod to 765 (except the keys)
           command: |
-            ssh $PROJECT_SSH_USER@$PROJECT_SSH_HOST "sudo chown safeshare:safeshare -R << parameters.release_path >>; sudo chmod 765 -R << parameters.release_path >>"
+            ssh $PROJECT_SSH_USER@$PROJECT_SSH_HOST "sudo chmod 765 -R << parameters.release_path >>"
       - run:
           name: Warm cache
           command: |
-            ssh $PROJECT_SSH_USER@$PROJECT_SSH_HOST "sudo -u safeshare << parameters.release_path >>/bin/console cache:warmup --env $APP_ENV"
+            ssh $PROJECT_SSH_USER@$PROJECT_SSH_HOST "sudo << parameters.release_path >>/bin/console cache:warmup --env $APP_ENV"
       - run:
           name: Enable new release
           command: |
@@ -67,7 +67,7 @@ commands:
       - run:
           name: Run DB mirations
           command: |
-            ssh $PROJECT_SSH_USER@$PROJECT_SSH_HOST "cd << parameters.release_path >>; sudo -u safeshare bin/console doctrine:migrations:migrate --no-interaction --env=$APP_ENV"
+            ssh $PROJECT_SSH_USER@$PROJECT_SSH_HOST "cd << parameters.release_path >>; sudo bin/console doctrine:migrations:migrate --no-interaction --env=$APP_ENV"
       - run:
           name: Restart FPM
           command: |
