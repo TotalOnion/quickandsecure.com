@@ -47,7 +47,7 @@ commands:
       - run:
           name: Create var folder
           command: |
-            ssh $PROJECT_SSH_USER@$PROJECT_SSH_HOST "sudo mkdir << parameters.release_path >>var"
+            ssh $PROJECT_SSH_USER@$PROJECT_SSH_HOST "sudo mkdir << parameters.release_path >>var; sudo chown -Rh $PROJECT_SSH_USER:$PROJECT_SSH_USER << parameters.release_path >>var"
       - run:
           name: Chmod to 765 (except the keys)
           command: |
