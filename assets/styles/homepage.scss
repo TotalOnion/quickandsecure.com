@@ -1,65 +1,27 @@
-#start {
-  ol {
-    padding-left: 1rem;
+@use './mixins';
+@use './breakpoints';
 
-    li {
-      list-style: none;
-      padding-bottom: 1em;
-      display: flex;
-      flex-direction: row;
-      align-items: baseline;
+body.success #start {
+  display: none;
+}
 
-      &::before {
-        font-family: 'Roboto Slab', serif;
-        font-size: 1.4em;
-        margin-right: 0.5em;
-        transform: rotate(20deg);
-        transition:
-          color var(--animation-time),
-          transform var(--animation-time);
-      }
+body.success #success {
+  display: block;
 
-      &:nth-child(1)::before {
-        content: '1';
-      }
-
-      &:nth-child(2)::before {
-        content: '2';
-      }
-
-      &:nth-child(3)::before {
-        content: '3';
-      }
-
-      &:nth-child(4)::before {
-        content: '4';
-      }
-
-      &:nth-child(5)::before {
-        content: '5';
-      }
-
-      &:nth-child(6)::before {
-        content: '6';
-      }
-
-      &:nth-child(7)::before {
-        content: '7';
-      }
-
-      &:nth-child(8)::before {
-        content: '8';
-      }
-
-      &:nth-child(9)::before {
-        content: '9';
-      }
-    }
+  &.app {
+    max-width: unset;
   }
 }
 
 #success {
   display: none;
+
+  .card {
+    padding: 1em;
+    margin-bottom: 1em;
+    background-color: white;
+    border: 1px dashed black;
+  }
 }
 
 body.success #start {

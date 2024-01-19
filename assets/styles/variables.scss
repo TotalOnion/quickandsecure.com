@@ -1,13 +1,25 @@
 :root {
   // fonts
-  --heading-font: 'Roboto Slab', serif;
+  --heading-font: 'Lemon', serif;
   --body-font: 'Roboto', sans-serif;
 
   // colours
   --color-black: #333;
   --color-red: #B84B23;
   --color-red-hover: #A3421F;
+  --color-teal-1: #008080;
+  --color-teal-2: #005780;
+  --color-light-grey: #EEE;
+  --color-dark-grey: #333;
+  --color-white-semi-transparent: rgba(255,255,255,0.6);
+  --color-black-semi-transparent: rgba(0,0,0,0.4);
+
+  // font sizes
+  --font-size-smallprint: 0.8em;
+  --font-size-smallprint-sx: 0.6em;
 
   // misc
   --animation-time: 300ms;
+  --standard-padding: 2em;
+  --corner-radius: calc(--standard-padding / 2);
 }

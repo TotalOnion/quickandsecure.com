@@ -1,0 +1,68 @@
+@use './variables';
+@use './mixins';
+@use './breakpoints';
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0');
+
+.modal {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-black-semi-transparent);
+    opacity: 0;
+    transition: all var(--animation-time);
+
+    &__inner {
+        display: flex;
+        flex-direction: column;
+        background-color: var(--color-light-grey);
+        padding: var(--standard-padding);
+        border-radius: calc(var(--standard-padding) / 2);
+        color: var(--color-black);
+        box-shadow: 0 0 12px 0 rgba(0,0,0,.1), 0 10px 30px 0 rgba(0,0,0,.2);
+
+        @supports (-webkit-backdrop-filter: none) or (backdrop-filter: none) {
+            background-color: var(--color-white-semi-transparent);
+            backdrop-filter: saturate(180%) blur(10px);
+        }
+
+        @include mixins.device(breakpoints.$tabLandscape) {
+            max-width: 400px;
+        }
+
+        h1, h2, h3, h4, h5 {
+            text-align: left;
+        }
+    }
+
+    &__dismiss {
+        position: absolute;
+        border: none;
+        background: transparent;
+        font-size: 2em;
+        padding: calc(var(--standard-padding) / 4);
+        top: 0;
+        right: 0;
+        cursor: pointer;
+    }
+
+    &__button-row {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+
+        & > * {
+            margin-left: 0.4em;
+            margin-right: 0.4em;
+        }
+    }
+}
+
+body.modal-active .modal {
+    display: flex;
+    opacity: 1;
+}

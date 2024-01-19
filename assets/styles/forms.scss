@@ -1,0 +1,50 @@
+@use './variables';
+@use './mixins';
+@use './breakpoints';
+
+.btn {
+    padding: calc(var(--standard-padding) / 2) var(--standard-padding);
+    border: 1px solid transparent;
+    border-radius: calc(var(--standard-padding) * 2);
+    background-color: var(--color-dark-grey);
+    color: var(--color-light-grey);
+    transition: all var(--animation-time);
+    font-weight: bold;
+    text-transform: uppercase;
+
+    &:hover {
+        cursor: pointer;
+    }
+
+    &.btn-primary {
+        background-color: var(--color-teal-1);
+        width: 100%;
+        font-family: var(--interesting-font);
+        font-size: 1em;
+    
+        &:hover,
+        &:active,
+        &:focus {
+            background-color: var(--color-teal-2);
+            outline-color: transparent;
+        }
+    }
+}
+
+.form-control {
+    border: 1px solid var(--color-dark-grey);
+    width: 100%;
+    margin-bottom: var(--standard-padding);
+    font-family: var(--body-font);
+    font-size: 1em;
+
+    @include mixins.device(breakpoints.$tabLandscape) {
+        width: 400px;
+        min-height: 200px;
+        padding: 0.5em;
+    }
+
+    &textarea {
+        border: 1px solid red;
+    }
+}

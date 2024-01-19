@@ -1,35 +1,41 @@
 {% extends 'base.html.twig' %}
 
 {% set title = "Here's your secret" %}
+{% set body_id = 'decrypt' %}
 
 {% block stylesheets %}
   {{ encore_entry_link_tags('decrypt') }}
 {% endblock %}
 
 {% block body %}
-  <h3>Someone sent you a one time secret! 👌</h3>
-  <p>Below is the secret text they sent. Copy and paste it where you need to now. Once you close this page it is gone for good. Permanently.</p>
-  <div class="mb-3">
-    <textarea
-      class="form-control"
-      name="secret"
-      rows="7"
-      data-source="secret"
-      disabled
-    ></textarea>
-  </div>
-  <div class="row">
-    <div class="col">
-      <button
-        type="button"
-        class="btn btn-primary btn-lg"
-        data-action="copy-to-clipboard"
-        data-copy-source="secret"
-        data-success-message="Copied!"
-      >
-        Copy to your clipboard
-      </button>
+  <div id="start">
+    <div class="app">
+      <h3>Someone sent you a one time secret! 👌</h3>
+      <p>Below is the secret text they sent. Copy and paste it where you need to now. Once you close this page it is gone for good. Permanently.</p>
+      <div class="mb-3">
+        <textarea
+          class="form-control"
+          name="secret"
+          rows="7"
+          data-source="secret"
+          disabled
+        ></textarea>
+      </div>
+      <div class="row">
+        <div class="col">
+          <button
+            type="button"
+            class="btn btn-primary btn-lg"
+            data-action="copy-to-clipboard"
+            data-copy-source="secret"
+            data-success-message="Copied!"
+          >
+            Copy to your clipboard
+          </button>
+        </div>
+      </div>
     </div>
+    {% include 'sections/explanation.twig' %}
   </div>
 {% endblock %}
 

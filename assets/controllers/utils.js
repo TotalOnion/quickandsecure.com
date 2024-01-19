@@ -1,6 +1,16 @@
 
-export function displayErrorMessage(message) {
-  alert(message);
+export function displayErrorMessage(messages, title) {
+  document.dispatchEvent(
+    new CustomEvent(
+      'modal:display',
+      {
+        detail: {
+          title: title ? title : 'Uh-oh',
+          text: messages
+        }
+      }
+    )
+  );
 }
 
 function fallbackCopyTextToClipboard(text) {

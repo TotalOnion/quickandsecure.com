@@ -1,6 +1,7 @@
 {% extends 'base.html.twig' %}
 
 {% set title = "Share a secret" %}
+{% set body_id = 'encrypt' %}
 
 {% block stylesheets %}
   {{ encore_entry_link_tags('homepage') }}
@@ -8,42 +9,37 @@
 
 {% block body %}
   <div id="start">
-    <h3>Sharing passwords and other sensitive information by email or chat message is A Really Bad Idea&trade;</h3>
-    <h3>Use a one time secret link instead!👌</h3>
-    <ol>
-      <li>Paste your password or secret below</li>
-      <li>Click "<em>Create my secret link!</em>" and your message is encrypted <em>✨in your browser✨</em>  using a randomly generated key</li>
-      <li>Share your new secret link with the recipient</li>
-      <li>When they open it they will see your secret once, and we delete it forever</li>
-    </ol>
-    <p>(The best bit? We <em>never</em> see your secret, and we <em>never</em> see your encryption key, all we store is the encrypted data that your browser sends us.)</p>
-    <div class="mb-3">
-      <textarea
-        class="form-control"
-        name="secret"
-        rows="7"
-        placeholder="Enter your secret here"
-        data-source="secret"
-        error-empty="Your secret is empty. Add something first."
-        error-bad-request="The encrypted data we received looked bad, or had missing bits. Please contact us so we can figure out why."
-        error-server-error="Something has gone wrong with the server. We're looking into this asap."
-        error-unknown="An unknown error has occured. We're looking into this asap."
-      ></textarea>
-    </div>
-    <div class="row">
-      <div class="col">
-        <button
-          type="button"
-          class="btn btn-primary btn-lg"
-          data-action="create"
-        >
-          Create my secret link!
-        </button>
+    <div class="app">
+      <h2>Share this:</h2>
+      <div class="mb-3">
+        <textarea
+          class="form-control"
+          name="secret"
+          rows="7"
+          placeholder="Enter your secret here"
+          data-source="secret"
+          error-empty="Your secret is empty. Add something first."
+          error-bad-request="The encrypted data we received looked bad, or had missing bits. Please contact us so we can figure out why."
+          error-server-error="Something has gone wrong with the server. We're looking into this asap."
+          error-unknown="An unknown error has occured. We're looking into this asap."
+        ></textarea>
+      </div>
+      <div class="row">
+        <div class="col">
+          <button
+            type="button"
+            class="btn btn-primary btn-lg"
+            data-action="create"
+          >
+            Create my secret link!
+          </button>
+        </div>
       </div>
     </div>
+    {% include 'sections/explanation.twig' %}
   </div>
 
-  <div id="success">
+  <div id="success" class="app">
     <h3 class="display-3">Hurrah! Here's your link 🚀</h3>
     <div class="card">
       <div class="card-body" data-source="full-link"></div>
@@ -62,7 +58,6 @@
       </div>
     </div>
   </div>
-  
 {% endblock %}
 {% block javascripts %}
   {{ encore_entry_script_tags('homepage') }}

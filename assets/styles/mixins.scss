@@ -1,0 +1,139 @@
+@use './breakpoints';
+@use 'sass:math';
+
+@mixin device($size: '768px', $type: 'min-width') {
+	@media screen and (#{$type}: #{$size}) {
+		@content;
+	}
+}
+
+@function fluid-size($size-px, $screen: 'mobile') {
+	@if $screen == 'mobile' {
+		@return calc(
+			(#{math.div($size-px, breakpoints.$mobile)} * var(--screen-width))
+		);
+	} @else if $screen == 'portrait' {
+		@return calc(
+			(
+				#{math.div($size-px, breakpoints.$tabPortrait)} * var(--screen-width)
+			)
+		);
+	} @else if $screen == 'landscape' {
+		@return calc(
+			(
+				#{math.div($size-px, breakpoints.$tabLandscape)} * var(--screen-width)
+			)
+		);
+	} @else if $screen == 'desktop' {
+		@return calc(
+			(
+				#{math.div($size-px, breakpoints.$desktop-reference)} * var(--screen-width)
+			)
+		);
+	} @else if $screen == 'static' {
+		@return calc(
+			(
+				#{math.div($size-px, breakpoints.$desktop-reference)} * var(--screen-width-static)
+			)
+		);
+	} @else {
+		@return calc(
+			(
+				#{math.div($size-px, breakpoints.$desktop-reference)} * var(--screen-width-static)
+			)
+		);
+	}
+}
+
+@mixin clipFrame($size: 32px) {
+	clip-path: polygon(
+		0% 0%,
+		100% 0%,
+		100% 100%,
+		calc(100% - #{$size}) 100%,
+		calc(100% - #{$size}) #{$size},
+		#{$size} #{$size},
+		#{$size} 100%,
+		0% 100%
+	);
+}
+
+@mixin clipFrameNoTop($size: 32px) {
+	clip-path: polygon(
+		0% 0%,
+		100% 0%,
+		100% 100%,
+		calc(100% - #{$size}) 100%,
+		calc(100% - #{$size}) 0,
+		#{$size} 0,
+		#{$size} 100%,
+		0% 100%
+	);
+}
+
+@mixin clipFrameNoBottom($size: 32px) {
+	clip-path: polygon(
+		0% 0%,
+		100% 0%,
+		100% 100%,
+		calc(100% - #{$size}) 100%,
+		calc(100% - #{$size}) #{$size},
+		#{$size} #{$size},
+		#{$size} 100%,
+		0% 100%
+	);
+}
+
+@mixin clipFrameAllRound($size: 32px) {
+	clip-path: polygon(
+		0% 0%,
+		100% 0%,
+		100% 100%,
+		#{$size} 100%,
+		#{$size} calc(100% - #{$size}),
+		calc(100% - #{$size}) calc(100% - #{$size}),
+		calc(100% - #{$size}) #{$size},
+		#{$size} #{$size},
+		#{$size} 100%,
+		0% 100%
+	);
+}
+
+@function getPercent($size-px, $device: 'desktop') {
+	@if $device == 'mobile' {
+		@return calc((($size-px / 1px) / var(--mobile)) * 100%);
+	}
+	@if $device == 'portrait' {
+		@return calc((($size-px / 1px) / var(--portrait)) * 100%);
+	}
+	@if $device == 'landscape ' {
+		@return calc((($size-px / 1px) / var(--landscape)) * 100%);
+	}
+	@if $device == 'desktop' {
+		@return calc((($size-px / 1px) / var(--desktop)) * 100%);
+	}
+}
+@mixin gradientDesigner() {
+	position: relative;
+	--spread: calc(100% - var(--gradient-spread));
+	&::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(
+			var(--gradient-origin),
+			rgba(255, 255, 255, 0) 0%,
+			rgba(255, 255, 255, 0) calc(var(--spread) - var(--gradient-amount)),
+			var(--gradient-colour) calc(100% - var(--gradient-amount))
+		);
+		opacity: var(--gradient-opacity);
+	}
+}
+@mixin horizontal-margin($size-value, $screen: 'mobile') {
+	html[dir='ltr'] & {
+		margin-left: fluid-size($size-value, $screen);
+	}
+	html[dir='rtl'] & {
+		margin-right: fluid-size($size-value, $screen);
+	}
+}

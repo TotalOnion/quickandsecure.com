@@ -1,57 +1,96 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto&family=Roboto+Slab&display=swap');
+@use './variables';
+@use './mixins';
+@use './breakpoints';
 
 body {
   font-family: var(--body-font);
   color: var(--color-black);
-}
-
-h1,
-h2,
-h3,
-h4,
-h5 {
-  font-family: var(--heading-font);
-  max-width: 972px;
-  margin-left: auto;
-  margin-right: auto;
-  text-align: center;
-}
-
-.header {
   display: grid;
-  justify-content: center;
-  align-items: center;
-  padding-top: var(--standard-padding);
-  padding-bottom: var(--standard-padding);
+  background: #FFF no-repeat center center;
+  background-size: cover;
+  min-height: 100vh;
+  padding: 0;
+  margin: 0;
+}
 
-  .logo {
-    background: transparent no-repeat center center url(../img/safeshare_logo.svg);
-    background-size: cover;
-    text-indent: 110%;
-    white-space: nowrap;
-    overflow: hidden;
-    width: 100%;
-    height: 0;
-    padding-bottom: 100%;
-    max-width: 200px;
-    max-height: 200px;
-    transform: rotate(10deg);
+.container {
+  display: flex;
+  flex-direction: column;
+
+  @include mixins.device(breakpoints.$tabLandscape) {
+    flex-direction: row;
   }
 }
 
-.body {
-  margin-bottom: 4em;
+#start {
+  display: flex;
+  flex-direction: column;
+
+  @include mixins.device(breakpoints.$tabLandscape) {
+    flex-direction: row;
+  }
+
+  .explanation {
+    margin-left: var(--standard-padding);
+    margin-top: 40vh;
+    filter: invert(1);
+    mix-blend-mode: color-dodge;
+
+    @include mixins.device(breakpoints.$tabLandscape) {
+      max-width:400px;
+    }
+
+    h1 {
+      text-align: left;
+      -webkit-text-stroke-width: 0.5px;
+      -webkit-text-stroke-color: white;
+    }
+  }
 }
 
-.btn-primary {
-  background-color: var(--color-red);
-  border-color: var(--color-red);
+.app {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-light-grey);
+  padding: var(--standard-padding);
+  border-radius: calc(var(--standard-padding) / 2);
+  color: var(--color-black);
+  box-shadow: 0 0 12px 0 rgba(0,0,0,.1), 0 10px 30px 0 rgba(0,0,0,.2);
 
-  &:hover,
-  &:active,
-  &:focus {
-    background-color: var(--color-red-hover);
-    border-color: var(--color-red-hover);
-    outline-color: transparent;
+  @supports (-webkit-backdrop-filter: none) or (backdrop-filter: none) {
+    background-color: var(--color-white-semi-transparent);
+    backdrop-filter: saturate(180%) blur(10px);
+  }
+
+  @include mixins.device(breakpoints.$tabLandscape) {
+    margin: unset;
+    max-width: 600px;
+    margin: 40vh 0 auto var(--standard-padding);
+  }
+}
+
+.byline {
+  position: absolute;
+  bottom: var(--standard-padding);
+  right: var(--standard-padding);
+  padding: calc(var(--standard-padding) / 2) var(--standard-padding);
+  text-align: right;
+  background: var(--color-light-grey);
+
+  @supports (-webkit-backdrop-filter: none) or (backdrop-filter: none) {
+    background-color: var(--color-white-semi-transparent);
+    backdrop-filter: saturate(180%) blur(10px);
+  }
+
+  &__artist,
+  &__art_name {
+    text-align: right;
+    color: var(--color-black);
+    font-size: var(--font-size-smallprint);
+    margin: 0;
+
+    a {
+      color: var(--color-black);
+    }
   }
 }
