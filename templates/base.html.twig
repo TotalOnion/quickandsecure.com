@@ -10,12 +10,13 @@
     <title>{{ title | default('') }} | Here, have this.</title>
 
     {% block stylesheets %}{% endblock %}
+    {% include 'sections/backgrounds.html' %}
   </head>
-  <body class="{{ body_id|default('') }}" style="background-image: url('/backgrounds/neom-QZGW6t70IsI-unsplash.jpg')">
-    <div class="byline">
-      <h4 class="byline__artist">By <a href="https://unsplash.com/@neom">NEOM</a></h4>
+  <body class="{{ body_id|default('') }} no-background-image">
+    <div class="byline" data-byline>
+      <h4 class="byline__artist">By <a href="" target="_blank" data-byline-artist></a></h4>
       <h5 class="byline__art_name">
-        <a href="https://unsplash.com/photos/a-person-swimming-in-the-ocean-with-a-lot-of-fish-QZGW6t70IsI?utm_content=creditShareLink&utm_medium=referral&utm_source=unsplash">
+        <a href="" target="_blank" data-byline-title>
           Made to Change
         </a>
       </h5>
