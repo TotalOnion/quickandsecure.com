@@ -3,6 +3,9 @@
 {% set title = "Here's your secret" %}
 {% set body_id = 'decrypt' %}
 
+{% block head %}
+  <meta name="robots" content="noindex">
+{% endblock %}
 {% block stylesheets %}
   {{ encore_entry_link_tags('decrypt') }}
 {% endblock %}
@@ -19,6 +22,8 @@
           rows="7"
           data-source="secret"
           disabled
+          error-server-error="Something has gone wrong with the server. We're looking into this asap."
+          error-unknown="An unknown error has occured. We're looking into this asap."
         ></textarea>
       </div>
       <div class="row">

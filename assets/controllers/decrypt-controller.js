@@ -37,7 +37,7 @@ export function init() {
     )
   ;
 
-  loadSecret( location.pathname.substring(1) );
+  loadSecret( location.pathname.substring(3) );
 }
 
 function loadSecret( slug ) {
@@ -68,9 +68,7 @@ function loadSecret( slug ) {
                 decryptMessage();
               },
               error => {
-                // TODO: error handling
-                console.log('nay');
-                console.log(error);
+                utils.displayErrorMessage(state.outputElement.getAttribute('error-unknown'));
               }
             )
           ;
@@ -84,7 +82,7 @@ function loadSecret( slug ) {
 
         case 500:
         default:
-          utils.displayErrorMessage(state.textareaElement.getAttribute('error-server-error'));
+          utils.displayErrorMessage(state.outputElement.getAttribute('error-server-error'));
           break;
       }
     }

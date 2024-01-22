@@ -163,6 +163,6 @@ async function encryptMessage(message) {
 function displaySuccess() {
   document.querySelector('body').classList.add('success');
   document.querySelector('[data-source="full-link"]').innerHTML = 
-    location.protocol + '//' + location.host + '/' + state.slug + '#' + state.rawKey;
+    location.protocol + '//' + location.host + '/s/' + state.slug + '#' + state.rawKey;
   ;
 }

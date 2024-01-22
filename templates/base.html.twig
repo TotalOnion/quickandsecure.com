@@ -4,11 +4,12 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
+    <meta name="description" content="Zero knowledge secret sharing. Send usernames and passwords to recipients safely, and securely.">
     <meta name="author" content="">
 
     <title>{{ title | default('') }} | Here, have this.</title>
 
+    {% block head %}{% endblock %}
     {% block stylesheets %}{% endblock %}
     {% include 'sections/backgrounds.html' %}
   </head>
@@ -16,15 +17,12 @@
     <div class="byline" data-byline>
       <h4 class="byline__artist">By <a href="" target="_blank" data-byline-artist></a></h4>
       <h5 class="byline__art_name">
-        <a href="" target="_blank" data-byline-title>
-          Made to Change
-        </a>
+        <a href="" target="_blank" data-byline-title></a>
       </h5>
     </div>
     <div class="container">
       {% block body %}{% endblock %}
     </div>
-    {% block javascripts %}{% endblock %}
     <div class="modal modal-dismissable">
       <div class="modal__inner">
         <button class="modal__dismiss" data-modal-action="close"><span class="material-symbols-outlined">close</span></button>
@@ -37,5 +35,6 @@
         </div>
       </div>
     </div>
+    {% block javascripts %}{% endblock %}
   </body>
 </html>
