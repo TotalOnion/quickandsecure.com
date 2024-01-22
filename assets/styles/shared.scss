@@ -13,11 +13,32 @@ body {
   margin: 0;
 }
 
+header {
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  .logo {
+    color: var(--color-white-semi-transparent);
+    margin: calc(var(--standard-padding) / 2);
+    width: auto;
+    display: inline-block;
+    -webkit-text-stroke-width: 0.5px;
+    -webkit-text-stroke-color: var(--color-black);
+
+    span {
+      color: var(--color-teal-1);
+    }
+  }
+}
+
 .container {
   display: flex;
   flex-direction: column;
+  margin-top: calc(var(--standard-padding) * 2);
 
   @include mixins.device(breakpoints.$tabLandscape) {
+    margin-top: unset;
     flex-direction: row;
   }
 }
