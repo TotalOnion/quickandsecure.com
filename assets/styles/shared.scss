@@ -24,7 +24,7 @@ body {
 
 #start {
   display: flex;
-  flex-direction: column;
+  flex-direction: column-reverse;
 
   @include mixins.device(breakpoints.$tabLandscape) {
     flex-direction: row;
@@ -32,12 +32,12 @@ body {
 }
 
 .explanation {
-  margin-left: var(--standard-padding);
-  margin-top: 40vh;
+  margin: var(--standard-padding);
   filter: invert(1);
   mix-blend-mode: color-dodge;
 
   @include mixins.device(breakpoints.$tabLandscape) {
+    margin-top: 40vh;
     max-width:400px;
   }
 
@@ -66,6 +66,7 @@ body.background-image__blend_normal .explanation { mix-blend-mode: normal; }
   border-radius: calc(var(--standard-padding) / 2);
   color: var(--color-black);
   box-shadow: 0 0 12px 0 rgba(0,0,0,.1), 0 10px 30px 0 rgba(0,0,0,.2);
+  margin: var(--standard-padding);
 
   @supports (-webkit-backdrop-filter: none) or (backdrop-filter: none) {
     background-color: var(--color-white-semi-transparent);

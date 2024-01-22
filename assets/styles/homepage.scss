@@ -21,6 +21,13 @@ body.success #success {
     margin-bottom: 1em;
     background-color: white;
     border: 1px dashed black;
+    max-width: calc(100vw - (var(--standard-padding) * 5));
+    word-wrap: break-word;
+
+    @include mixins.device(breakpoints.$tabLandscape) {
+      max-width: unset;
+      word-wrap: unset;
+    }
   }
 }
 
