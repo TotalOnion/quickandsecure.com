@@ -41,6 +41,23 @@ header {
     margin-top: unset;
     flex-direction: row;
   }
+
+  &__inner-center-center {
+    
+    &.error-notice {
+      padding: var(--standard-padding);
+      margin: var(--standard-padding);
+
+      & > * {
+        text-align: center;
+      }
+
+      @include mixins.device(breakpoints.$tabLandscape) {
+        width: 400px;
+        margin: 200px auto auto auto;
+      }
+    }
+  }
 }
 
 #start {
@@ -83,12 +100,20 @@ body.background-image__blend_normal .explanation { mix-blend-mode: normal; }
 .app {
   display: flex;
   flex-direction: column;
-  background-color: var(--color-light-grey);
   padding: var(--standard-padding);
-  border-radius: calc(var(--standard-padding) / 2);
   color: var(--color-black);
-  box-shadow: 0 0 12px 0 rgba(0,0,0,.1), 0 10px 30px 0 rgba(0,0,0,.2);
   margin: var(--standard-padding);
+
+  @include mixins.device(breakpoints.$tabLandscape) {
+    margin: unset;
+    max-width: 600px;
+    margin: 40vh 0 auto var(--standard-padding);
+  }
+}
+
+.glass-background {
+  border-radius: calc(var(--standard-padding) / 2);
+  background-color: var(--color-light-grey);
 
   @supports (-webkit-backdrop-filter: none) or (backdrop-filter: none) {
     background-color: var(--color-white-semi-transparent);
@@ -99,6 +124,10 @@ body.background-image__blend_normal .explanation { mix-blend-mode: normal; }
     margin: unset;
     max-width: 600px;
     margin: 40vh 0 auto var(--standard-padding);
+  }
+
+  &__with-shadow {
+    box-shadow: 0 0 12px 0 rgba(0,0,0,.1), 0 10px 30px 0 rgba(0,0,0,.2);
   }
 }
 

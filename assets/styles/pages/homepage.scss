@@ -1,5 +1,5 @@
-@use './mixins';
-@use './breakpoints';
+@use '../shared/mixins';
+@use '../shared/breakpoints';
 
 body.success #start {
   display: none;
