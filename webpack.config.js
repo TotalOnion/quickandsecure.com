@@ -23,6 +23,7 @@ Encore
     .addEntry('homepage', './assets/homepage.js')
     .addEntry('decrypt', './assets/decrypt.js')
     .addEntry('default-pages', './assets/default-pages.js')
+    .addEntry('emails', './assets/emails.js')
 
     // enables the Symfony UX Stimulus bridge (used in assets/bootstrap.js)
     //.enableStimulusBridge('./assets/controllers.json')

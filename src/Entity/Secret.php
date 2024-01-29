@@ -32,6 +32,18 @@ class Secret
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $destroyedOn;
 
+    #[ORM\ManyToOne(inversedBy: 'createdSecrets')]
+    private ?User $createdBy = null;
+
+    #[ORM\ManyToOne(inversedBy: 'readSecrets')]
+    private ?User $readBy = null;
+
+    #[ORM\Column]
+    private ?bool $mustBeLoggedInToRead = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $description = null;
+
     #[ORM\PrePersist]
     public function setCreatedOnValue()
     {
@@ -99,6 +111,54 @@ class Secret
     public function setDestroyedOn(?\DateTimeInterface $destroyedOn): self
     {
         $this->destroyedOn = $destroyedOn;
+
+        return $this;
+    }
+
+    public function getCreatedBy(): ?User
+    {
+        return $this->createdBy;
+    }
+
+    public function setCreatedBy(?User $createdBy): static
+    {
+        $this->createdBy = $createdBy;
+
+        return $this;
+    }
+
+    public function getReadBy(): ?User
+    {
+        return $this->readBy;
+    }
+
+    public function setReadBy(?User $readBy): static
+    {
+        $this->readBy = $readBy;
+
+        return $this;
+    }
+
+    public function isMustBeLoggedInToRead(): ?bool
+    {
+        return $this->mustBeLoggedInToRead;
+    }
+
+    public function setMustBeLoggedInToRead(bool $mustBeLoggedInToRead): static
+    {
+        $this->mustBeLoggedInToRead = $mustBeLoggedInToRead;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): static
+    {
+        $this->description = $description;
 
         return $this;
     }

@@ -1,0 +1,53 @@
+/**
+These styles, once built, are used to create inline styles for the html emails
+*/
+@import url('https://fonts.googleapis.com/css2?family=Lemon&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto&family=Roboto+Slab&display=swap');
+
+.email-container {
+    font-family: 'Roboto', sans-serif;
+    background-color: #EEE;
+    text-align: center;
+
+    p {
+        color: #333;
+    }
+
+    h1, h2, h3, h4 {
+        font-family: 'Lemon', serif;
+        text-align: center;
+        color: #333;
+    }
+
+    .btn {
+        padding: 1em 2em;
+        border: 1px solid transparent;
+        border-radius: 2em;
+        background-color: #333;
+        color: #EEE;
+        transition: all 0.3s;
+        font-weight: bold;
+        text-transform: uppercase;
+        text-decoration: none;
+        text-align: center;
+    
+        &:hover {
+            cursor: pointer;
+        }
+    
+        &.btn-primary {
+            display: block;
+            background-color: #008080;
+            width: calc(100% - 4em);
+            font-family: 'Lemon', serif;
+            font-size: 1em;
+        
+            &:hover,
+            &:active,
+            &:focus {
+                background-color: #005780;
+                outline-color: transparent;
+            }
+        }
+    }
+}
