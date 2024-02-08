@@ -18,6 +18,8 @@ class MailerService
     const EMAIL_FROM_NAME = 'Here, have this';
     const EMAIL_FROM_ADDRESS = 'hello@herehaveth.is';
 
+    const EMAIL_EVENT_DISPATCHED = 'EMAIL_EVENT_DISPATCHED';
+
     public function __construct(
         private MailerInterface $mailerInterface,
         private EntityManagerInterface $entityManager,
@@ -34,7 +36,16 @@ class MailerService
     ): Email {
         $emailIdentifier = Uuid::v4();
 
-        $email = (new TemplatedEmail())
+        // Create an entry in the emails table
+        $email = new Email();
+        $email->setRecipientUser( $recipientUser );
+        $email->setIdentifier( $emailIdentifier );
+        $email->settype( $emailType );
+        $this->entityManager->persist( $email );
+        $this->entityManager->flush( $email );
+
+        // Create the email
+        $templatedEmail = (new TemplatedEmail())
             ->from( new Address( self::EMAIL_FROM_ADDRESS, self::EMAIL_FROM_NAME ))
             ->to( new Address( $recipientUser->getEmail() ) )
             ->subject( $subject )
@@ -48,32 +59,24 @@ class MailerService
             'recipient-user' => $recipientUser->getId()
         ];
 
-        $email->getHeaders()->addTextHeader( 'h:X-Mailgun-Variables', json_encode( $mailgunVariables ) );
-
-        $this->mailerInterface->send( $email );
-
-        /*
-            TODO:
-                - Save the uuid, recipient user ID, and email type to an Email entity
-                - Save an EmailEvent to say it has been dispatched
-        */
-        // Create an entry in the emails table
-        $email = new Email();
-        $email->setRecipientUser( $recipientUser );
-        $email->setIdentifier( $emailIdentifier );
-        $email->settype( $emailType );
-        $this->entityManager->persist( $email );
+        $templatedEmail->getHeaders()->addTextHeader( 'h:X-Mailgun-Variables', json_encode( $mailgunVariables ) );
+        $templatedEmail->getHeaders()->addTextHeader('X-Mailgun-Tag', $emailType);
+        $this->mailerInterface->send( $templatedEmail );
 
         // create an emailEvent entry
-        $emailEvent = new EmailEvent();
-
-        $this->entityManager->flush( $email );
+        $this->logEvent( $email, self::EMAIL_EVENT_DISPATCHED );
 
         return $email;
     }
 
-    private function logEvent( string $uuid, User $recipientUser, string $emailType )
+    private function logEvent( Email $email, string $eventName )
     {
-        
+        $emailEvent = new EmailEvent();
+        $emailEvent->setEmail( $email );
+        $emailEvent->setTimestamp( new \DateTimeImmutable() );
+        $emailEvent->setEvent( $eventName );
+        $this->entityManager->persist( $emailEvent );
+
+        $this->entityManager->flush( $email );
     }
 }

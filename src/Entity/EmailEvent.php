@@ -18,11 +18,11 @@ class EmailEvent
     #[ORM\JoinColumn(nullable: false)]
     private ?Email $email = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $type = null;
-
     #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE)]
     private ?\DateTimeImmutable $timestamp = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $event = null;
 
     public function getId(): ?int
     {
@@ -41,18 +41,6 @@ class EmailEvent
         return $this;
     }
 
-    public function getType(): ?string
-    {
-        return $this->type;
-    }
-
-    public function setType(string $type): static
-    {
-        $this->type = $type;
-
-        return $this;
-    }
-
     public function getTimestamp(): ?\DateTimeImmutable
     {
         return $this->timestamp;
@@ -61,6 +49,18 @@ class EmailEvent
     public function setTimestamp(\DateTimeImmutable $timestamp): static
     {
         $this->timestamp = $timestamp;
+
+        return $this;
+    }
+
+    public function getEvent(): ?string
+    {
+        return $this->event;
+    }
+
+    public function setEvent(string $event): static
+    {
+        $this->event = $event;
 
         return $this;
     }

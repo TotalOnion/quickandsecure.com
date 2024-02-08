@@ -1,53 +1,241 @@
-/**
-These styles, once built, are used to create inline styles for the html emails
-*/
-@import url('https://fonts.googleapis.com/css2?family=Lemon&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Roboto&family=Roboto+Slab&display=swap');
+body {
+	background-color: #333;
+	padding: 0;
+	text-align: center;
+}
 
-.email-container {
-    font-family: 'Roboto', sans-serif;
-    background-color: #EEE;
+#outer_wrapper {
+	background-color: #333;
+}
+
+#wrapper {
+	margin: 0 auto;
+	padding: 70px 0;
+	-webkit-text-size-adjust: none !important;
+	width: 100%;
+	max-width: 600px;
+}
+
+#template_container {
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1) !important;
+	background-color: #383838;
+	border: 1px solid #444;
+	border-radius: 3px !important;
+}
+
+#template_header {
+	background-color: #383838;
+	border-radius: 3px 3px 0 0 !important;
+	color: #EEE;
+	border-bottom: 1px solid #444;
+	font-weight: bold;
+	line-height: 100%;
+	vertical-align: middle;
+	font-family: "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif;
+}
+
+#template_header h1,
+#template_header h1 a {
+	color: #EEE;
+	background-color: inherit;
     text-align: center;
+}
 
-    p {
-        color: #333;
+#template_header_image img {
+	margin-left: 0;
+	margin-right: 0;
+}
+
+#template_footer td {
+	padding: 0;
+	border-radius: 6px;
+}
+
+#template_footer #credit {
+	border: 0;
+	color: #EEE;
+	font-family: "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif;
+	font-size: 12px;
+	line-height: 150%;
+	text-align: center;
+	padding: 24px 0;
+}
+
+#template_footer #credit p {
+	margin: 0 0 16px;
+}
+
+#body_content {
+	background-color: #383838;
+}
+
+#body_content table td {
+	padding: 48px 48px 32px;
+}
+
+#body_content table td td {
+	padding: 12px;
+}
+
+#body_content table td th {
+	padding: 12px;
+}
+
+#body_content td ul.wc-item-meta {
+	font-size: small;
+	margin: 1em 0 0;
+	padding: 0;
+	list-style: none;
+}
+
+#body_content td ul.wc-item-meta li {
+	margin: 0.5em 0 0;
+	padding: 0;
+}
+
+#body_content td ul.wc-item-meta li p {
+	margin: 0;
+}
+
+#body_content p {
+	margin: 0 0 16px;
+}
+
+#body_content_inner {
+	color: #EEE;
+	font-family: "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif;
+	font-size: 14px;
+	line-height: 150%;
+	text-align: left;
+}
+
+.td {
+	color: #EEE;
+	border: 1px solid #F00;
+	vertical-align: middle;
+}
+
+.address {
+	padding: 12px;
+	color: #EEE;
+	border: 1px solid #F00;
+}
+
+.text {
+	color: #EEE;
+	font-family: "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif;
+}
+
+.link {
+	color: #008080;
+}
+
+#header_wrapper {
+	padding: 36px 48px;
+	display: block;
+}
+
+h1 {
+	color: #EEE;
+	font-family: "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif;
+	font-size: 30px;
+	font-weight: 300;
+	line-height: 150%;
+	margin: 0;
+	text-align: left;
+	text-shadow: 0 1px 0 rgba(0,0,0,0.4);
+}
+
+h2 {
+	color: #EEE;
+	display: block;
+	font-family: "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif;
+	font-size: 18px;
+	font-weight: bold;
+	line-height: 130%;
+	margin: 0 0 18px;
+	text-align: left;
+}
+
+h3 {
+	color: #EEE;
+	display: block;
+	font-family: "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif;
+	font-size: 16px;
+	font-weight: bold;
+	line-height: 130%;
+	margin: 16px 0 8px;
+	text-align: left;
+}
+
+a {
+	color: #008080;
+	font-weight: normal;
+	text-decoration: underline;
+}
+
+img {
+	border: none;
+	display: inline-block;
+	font-size: 14px;
+	font-weight: bold;
+	height: auto;
+	outline: none;
+	text-decoration: none;
+	text-transform: capitalize;
+	vertical-align: middle;
+	margin-right: 10px;
+	max-width: 100%;
+}
+
+.btn {
+    font-size: 1.5em;
+    display: block;
+    padding: 1em 2em;
+    border: 1px solid transparent;
+    border-radius: 2em;
+    background-color: #EEE;
+    color: #333;
+    transition: all 0.3s;
+    font-weight: bold;
+    text-transform: uppercase;
+    text-decoration: none;
+    text-align: center;
+    margin: 1em 2em 0 2em;
+    box-shadow: 0 0 2em rgba(0,0,0,0.2);
+
+    &:hover {
+        cursor: pointer;
     }
 
-    h1, h2, h3, h4 {
-        font-family: 'Lemon', serif;
-        text-align: center;
-        color: #333;
-    }
-
-    .btn {
-        padding: 1em 2em;
-        border: 1px solid transparent;
-        border-radius: 2em;
-        background-color: #333;
-        color: #EEE;
-        transition: all 0.3s;
-        font-weight: bold;
-        text-transform: uppercase;
-        text-decoration: none;
-        text-align: center;
+    &.btn-primary {
+        background-color: #008080;
+        width: calc(100% - 8em);
     
-        &:hover {
-            cursor: pointer;
-        }
-    
-        &.btn-primary {
-            display: block;
-            background-color: #008080;
-            width: calc(100% - 4em);
-            font-family: 'Lemon', serif;
-            font-size: 1em;
-        
-            &:hover,
-            &:active,
-            &:focus {
-                background-color: #005780;
-                outline-color: transparent;
-            }
+        &:hover,
+        &:active,
+        &:focus {
+            background-color: #005780;
+            outline-color: transparent;
         }
     }
+}
+
+/**
+ * Media queries are not supported by all email clients, however they do work on modern mobile
+ * Gmail clients and can help us achieve better consistency there.
+ */
+@media screen and (max-width: 600px) {
+	#header_wrapper {
+		padding: 27px 36px !important;
+		font-size: 24px;
+	}
+
+	#body_content table > tbody > tr > td {
+		padding: 10px !important;
+	}
+
+	#body_content_inner {
+		font-size: 10px !important;
+	}
 }

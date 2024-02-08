@@ -15,6 +15,12 @@ framework:
     #fragments: true
     php_errors:
         log: true
+    
+    webhook:
+        routing:
+            mailer_mailgun:
+                service: 'mailer.webhook.request_parser.mailgun'
+                secret: '%env(MAILER_MAILGUN_SECRET)%'
 
 when@test:
     framework:
