@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% set title = "Verifying your email" %}
+{% set body_id = 'email-verify' %}
+
+{% block head %}
+  <meta name="robots" content="noindex">
+{% endblock %}
+{% block stylesheets %}
+  {{ encore_entry_link_tags('decrypt') }}
+{% endblock %}
+
+{% block body %}
+    <div id="start">
+        <div class="app glass-background glass-background__with-shadow">
+            <h3>Verifying your email</h3>
+            {% if mode == 'invalid-request' %}
+                <p class="error">Sorry but the URL doesn't seem right.</p>
+            {% elseif mode == 'token-not-found' %}
+                <p class="error">Sorry but that email verification token could not be found.</p>
+            {% elseif mode == 'already-validated' %}
+                <p class="warning">This email address is already validated. Please login.</p>
+            {% elseif mode == 'success' %}
+                <p class="success">Thank you for verifying your email address. Please close this window and return to the registration window.</p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+  
+{% endblock %}

@@ -60,7 +60,7 @@ class MailerService
         ];
 
         $templatedEmail->getHeaders()->addTextHeader( 'h:X-Mailgun-Variables', json_encode( $mailgunVariables ) );
-        $templatedEmail->getHeaders()->addTextHeader('X-Mailgun-Tag', $emailType);
+        $templatedEmail->getHeaders()->addTextHeader( 'X-Mailgun-Tag', $emailType );
         $this->mailerInterface->send( $templatedEmail );
 
         // create an emailEvent entry

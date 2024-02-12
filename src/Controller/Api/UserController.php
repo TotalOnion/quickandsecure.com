@@ -3,6 +3,7 @@
 namespace App\Controller\Api;
 
 use App\Entity\User;
+use App\Repository\EmailRepository;
 use App\Repository\UserRepository;
 use App\Services\MailerService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -64,13 +65,13 @@ class UserController extends AbstractController
         );
         $user->setPassword( $hashedPassword );
 
-        $validationToken = base64_encode( openssl_random_pseudo_bytes(16) );
+        $validationToken = base64_encode( openssl_random_pseudo_bytes(32) );
         $user->setEmailValidationToken( $validationToken );
         $user->isEmailValidated( false );
         $entityManager->persist( $user );
         $entityManager->flush();
 
-        $mailerService->sendToUser(
+        $email = $mailerService->sendToUser(
             MailerService::EMAIL_TYPE_VERIFY_EMAIL,
             $user,
             'Please verify your email address.',
@@ -79,11 +80,32 @@ class UserController extends AbstractController
                 'validationUrl' =>  sprintf(
                     'https://%s/email-verify?token=%s',
                     $_SERVER['SERVER_NAME'],
-                    $validationToken
+                    urlencode( $validationToken )
                 )
             ]
         );
 
         return $authenticationSuccessHandler->handleAuthenticationSuccess($user);
+    }
+
+    #[Route('/registration-status', name:'api:registration_status', methods:['GET'])]
+    public function registrationStatus(
+        #[CurrentUser] ?User $user,
+        EmailRepository $emailRepository
+    ) {
+        if ( $user->isEmailValidated() ) {
+            return new Response(
+                json_encode(['success'=>true])
+            )
+        }
+        $inviteEmail = $emailRepository->findOneBy(
+            [
+                'recipientUser' => $user,
+                'type' => MailerService::EMAIL_TYPE_VERIFY_EMAIL
+            ],
+            [
+                'id' => 'DESC'
+            ]
+        );
     }
 }

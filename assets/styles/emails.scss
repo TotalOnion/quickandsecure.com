@@ -41,9 +41,15 @@ body {
     text-align: center;
 }
 
-#template_header_image img {
-	margin-left: 0;
-	margin-right: 0;
+#template_header_image {
+	min-height: 5em;
+	background: transparent no-repeat center center url(../img/herehaveth.is-logo@4x.png);
+	background-size: contain;
+
+	img {
+		margin-left: 0;
+		margin-right: 0;
+	}
 }
 
 #template_footer td {

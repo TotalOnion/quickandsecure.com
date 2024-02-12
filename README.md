@@ -19,3 +19,5 @@ yarn dev
 https://symfony.com/doc/current/security.html#json-login
 https://symfony.com/doc/current/security/access_token.html
 
+Admin?
+https://coreui.io/demos/react/4.6/dark/#/dashboard
