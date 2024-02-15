@@ -5,9 +5,10 @@ namespace App\Entity;
 use App\Repository\EmailEventRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use JsonSerializable;
 
 #[ORM\Entity(repositoryClass: EmailEventRepository::class)]
-class EmailEvent
+class EmailEvent implements JsonSerializable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -63,5 +64,14 @@ class EmailEvent
         $this->event = $event;
 
         return $this;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'id' => $this->id,
+            'event' => $this->event,
+            'timestamp' => $this->timestamp,
+        ];
     }
 }

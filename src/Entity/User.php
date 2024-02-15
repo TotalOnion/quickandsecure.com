@@ -6,12 +6,13 @@ use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JsonSerializable;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-class User implements UserInterface, PasswordAuthenticatedUserInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface, JsonSerializable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -44,9 +45,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(nullable: true)]
     private ?bool $emailValidated = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $emailValidationToken = null;
 
     #[ORM\OneToMany(mappedBy: 'sendingUser', targetEntity: Email::class)]
     private Collection $sentEmails;
@@ -235,18 +233,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getEmailValidationToken(): ?string
-    {
-        return $this->emailValidationToken;
-    }
-
-    public function setEmailValidationToken(?string $emailValidationToken): static
-    {
-        $this->emailValidationToken = $emailValidationToken;
-
-        return $this;
-    }
-
     /**
      * @return Collection<int, Email>
      */
@@ -305,5 +291,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         }
 
         return $this;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'id'             => $this->id,
+            'email'          => $this->email,
+            'emailValidated' => $this->emailValidated ? true : false,
+        ];
     }
 }

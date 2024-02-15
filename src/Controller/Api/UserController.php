@@ -5,6 +5,7 @@ namespace App\Controller\Api;
 use App\Entity\User;
 use App\Repository\EmailRepository;
 use App\Repository\UserRepository;
+use App\Security\EmailVerifier;
 use App\Services\MailerService;
 use Doctrine\ORM\EntityManagerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Security\Http\Authentication\AuthenticationSuccessHandler;
@@ -18,7 +19,7 @@ use Symfony\Component\Security\Http\Attribute\CurrentUser;
 #[Route('/api/v1/user')]
 class UserController extends AbstractController
 {
-    #[Route('/register', name:'api:user_register', methods:['POST'])]
+    #[Route('/register', name:'api:user:register', methods:['POST'])]
     public function register(
         #[CurrentUser] ?User $user,
         UserPasswordHasherInterface $passwordHasher,
@@ -26,7 +27,8 @@ class UserController extends AbstractController
         UserRepository $userRepository,
         Request $request,
         MailerService $mailerService,
-        AuthenticationSuccessHandler $authenticationSuccessHandler
+        AuthenticationSuccessHandler $authenticationSuccessHandler,
+        EmailVerifier $emailVerifier
     ): Response
     {
         if ( $user ) {
@@ -64,48 +66,58 @@ class UserController extends AbstractController
             $payload->password
         );
         $user->setPassword( $hashedPassword );
-
-        $validationToken = base64_encode( openssl_random_pseudo_bytes(32) );
-        $user->setEmailValidationToken( $validationToken );
-        $user->isEmailValidated( false );
+        $user->setEmailValidated( false );
         $entityManager->persist( $user );
         $entityManager->flush();
 
-        $email = $mailerService->sendToUser(
+        $signatureComponents = $emailVerifier->getEmailConfirmationContext(
+            'frontend:email-verify',
+            $user
+        );
+
+        $mailerService->sendToUser(
             MailerService::EMAIL_TYPE_VERIFY_EMAIL,
             $user,
             'Please verify your email address.',
             'emails/email-validation.html.twig',
-            [
-                'validationUrl' =>  sprintf(
-                    'https://%s/email-verify?token=%s',
-                    $_SERVER['SERVER_NAME'],
-                    urlencode( $validationToken )
-                )
-            ]
+            $signatureComponents
         );
 
         return $authenticationSuccessHandler->handleAuthenticationSuccess($user);
     }
 
-    #[Route('/registration-status', name:'api:registration_status', methods:['GET'])]
+    #[Route('/me', name:'api:user:me', methods:['GET'])]
     public function registrationStatus(
         #[CurrentUser] ?User $user,
         EmailRepository $emailRepository
     ) {
-        if ( $user->isEmailValidated() ) {
-            return new Response(
-                json_encode(['success'=>true])
-            )
+        if ( !$user ) {
+            return new Response(json_encode([
+                'user-type' => 'anonmymous'
+            ]));
         }
-        $inviteEmail = $emailRepository->findOneBy(
-            [
-                'recipientUser' => $user,
-                'type' => MailerService::EMAIL_TYPE_VERIFY_EMAIL
-            ],
-            [
-                'id' => 'DESC'
-            ]
-        );
+
+        $payload = $user->jsonSerialize();
+        $payload['user-type'] = 'user';
+        if ( !$user->isEmailValidated() ) {
+            // The user has not verified their email. Return info on where the verification email is in the process
+            $latestInviteEmail = $emailRepository->findOneBy(
+                [
+                    'recipientUser' => $user,
+                    'type' => MailerService::EMAIL_TYPE_VERIFY_EMAIL
+                ],
+                [
+                    'id' => 'DESC'
+                ]
+            );
+            $payload['invite-email-events'] = [];
+            foreach ( $latestInviteEmail->getEmailEvents() as $emailEvent ) {
+                $payload['invite-email-events'][] = $emailEvent->jsonSerialize();
+            }
+        }
+
+        $payload['roles'] = $user->getRoles();
+
+        return new Response(json_encode($payload));
     }
 }

@@ -16,10 +16,13 @@
             <h3>Verifying your email</h3>
             {% if mode == 'invalid-request' %}
                 <p class="error">Sorry but the URL doesn't seem right.</p>
-            {% elseif mode == 'token-not-found' %}
-                <p class="error">Sorry but that email verification token could not be found.</p>
+            {% elseif mode == 'user-not-found' %}
+                <p class="error">Sorry but that email verification user or token could not be found.</p>
             {% elseif mode == 'already-validated' %}
                 <p class="warning">This email address is already validated. Please login.</p>
+            {% elseif mode == 'validation-failed' %}
+                <p class="error">Validation failed:</p>
+                <p class="error">{{ error }}</p>
             {% elseif mode == 'success' %}
                 <p class="success">Thank you for verifying your email address. Please close this window and return to the registration window.</p>
             {% endif %}

@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Entity\Email;
 use App\Entity\EmailEvent;
 use App\Entity\User;
+use App\Security\EmailVerifier;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\MailerInterface;
@@ -18,11 +19,12 @@ class MailerService
     const EMAIL_FROM_NAME = 'Here, have this';
     const EMAIL_FROM_ADDRESS = 'hello@herehaveth.is';
 
-    const EMAIL_EVENT_DISPATCHED = 'EMAIL_EVENT_DISPATCHED';
+    const EMAIL_EVENT_DISPATCHED = 'dispatched';
 
     public function __construct(
         private MailerInterface $mailerInterface,
         private EntityManagerInterface $entityManager,
+        private EmailVerifier $emailVerifier,
     ) {
 
     }
