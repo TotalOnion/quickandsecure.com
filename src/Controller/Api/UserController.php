@@ -93,7 +93,8 @@ class UserController extends AbstractController
     ) {
         if ( !$user ) {
             return new Response(json_encode([
-                'user-type' => 'anonmymous'
+                'user-type' => 'anonymous',
+                'capabilities' => User::getCapabilitiesByRole( 'PUBLIC_ACCESS' ),
             ]));
         }
 
@@ -106,17 +107,13 @@ class UserController extends AbstractController
                     'recipientUser' => $user,
                     'type' => MailerService::EMAIL_TYPE_VERIFY_EMAIL
                 ],
-                [
-                    'id' => 'DESC'
-                ]
+                [ 'id' => 'DESC' ]
             );
             $payload['invite-email-events'] = [];
             foreach ( $latestInviteEmail->getEmailEvents() as $emailEvent ) {
                 $payload['invite-email-events'][] = $emailEvent->jsonSerialize();
             }
         }
-
-        $payload['roles'] = $user->getRoles();
 
         return new Response(json_encode($payload));
     }

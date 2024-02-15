@@ -15,6 +15,7 @@ yarn dev
 [Basic user implementation](https://symfony.com/doc/current/security.html)
 [Google oAuth](https://github.com/thephpleague/oauth2-google/tree/main)
 [Webhook event listener](https://symfony.com/blog/new-in-symfony-6-3-webhook-integration-with-mailer-and-notifier?utm_source=Symfony%20Blog%20Feed&utm_medium=feed&ref=jobbsy)
+[Refresh tokens](https://github.com/markitosgv/JWTRefreshTokenBundle)
 
 https://symfony.com/doc/current/security.html#json-login
 https://symfony.com/doc/current/security/access_token.html

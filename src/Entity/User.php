@@ -14,6 +14,25 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface, JsonSerializable
 {
+    // Capabilities
+    const CAPABILITY_SECRET_CREATE         = 'secret.create';
+    const CAPABILITY_SECRET_SET_OWN_TITLE  = 'secret.create.set-own-title';
+    const CAPABILITY_SECRET_SET_OWN_EXPIRY = 'secret.create.set-own-expiry';
+    const CAPABILITY_SECRET_READ           = 'secret.read';
+
+    const CAPABILITIES = [
+        'PUBLIC_ACCESS' => [
+            self::CAPABILITY_SECRET_CREATE,
+            self::CAPABILITY_SECRET_READ,
+        ],
+        'ROLE_USER' => [
+            self::CAPABILITY_SECRET_CREATE,
+            self::CAPABILITY_SECRET_SET_OWN_TITLE,
+            self::CAPABILITY_SECRET_SET_OWN_EXPIRY,
+            self::CAPABILITY_SECRET_READ,
+        ]
+    ];
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -51,6 +70,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JsonSer
 
     #[ORM\OneToMany(mappedBy: 'recipientUser', targetEntity: Email::class)]
     private Collection $receivedEmails;
+
+    private array $capabilities = [];
 
     public function __construct()
     {
@@ -293,12 +314,38 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JsonSer
         return $this;
     }
 
+    public function getCapabilities()
+    {
+        if ( !empty( $this->capabilities ) ) {
+            return $this->capabilities;
+        }
+
+        $capabilities = [];
+        foreach( $this->getRoles() as $role ) {
+            $capabilities = array_merge($capabilities, $this->getCapabilitiesByRole( $role ) );
+        }
+
+        $this->capabilities = array_unique( $capabilities );
+        return $this->capabilities;
+    }
+
+    public static function getCapabilitiesByRole( string $role ): array
+    {
+        return self::CAPABILITIES[ $role ] ?? [];
+    }
+
+    public function can( $capability ):bool
+    {
+        return in_array( $capability, $this->getCapabilities() );
+    }
+
     public function jsonSerialize(): array
     {
         return [
             'id'             => $this->id,
             'email'          => $this->email,
             'emailValidated' => $this->emailValidated ? true : false,
+            'capabilities'   => $this->getCapabilities(),
         ];
     }
 }
