@@ -3,9 +3,9 @@
 namespace App\Services;
 
 use App\Entity\Email;
-use App\Entity\EmailEvent;
 use App\Entity\User;
 use App\Security\EmailVerifier;
+use App\Services\EventLogService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\MailerInterface;
@@ -14,20 +14,21 @@ use Symfony\Component\Uid\Uuid;
 
 class MailerService
 {
-    const EMAIL_TYPE_VERIFY_EMAIL = 'EMAIL_TYPE_VERIFY_EMAIL';
+    const EMAIL_TYPE_VERIFY_EMAIL           = 'EMAIL_TYPE_VERIFY_EMAIL';
+    const EMAIL_TYPE_PASSWORD_RESET_REQUEST = 'EMAIL_TYPE_PASSWORD_RESET_REQUEST';
 
-    const EMAIL_FROM_NAME = 'Here, have this';
+    const EMAIL_FROM_NAME    = 'Here, have this';
     const EMAIL_FROM_ADDRESS = 'hello@herehaveth.is';
 
+    // All other email events come from the Mailgun Webhook
     const EMAIL_EVENT_DISPATCHED = 'dispatched';
 
     public function __construct(
         private MailerInterface $mailerInterface,
         private EntityManagerInterface $entityManager,
         private EmailVerifier $emailVerifier,
-    ) {
-
-    }
+        private EventLogService $eventLogService,
+    ) { }
 
     public function sendToUser(
         string $emailType,
@@ -65,20 +66,8 @@ class MailerService
         $templatedEmail->getHeaders()->addTextHeader( 'X-Mailgun-Tag', $emailType );
         $this->mailerInterface->send( $templatedEmail );
 
-        // create an emailEvent entry
-        $this->logEvent( $email, self::EMAIL_EVENT_DISPATCHED );
+        $this->eventLogService->log( $email, self::EMAIL_EVENT_DISPATCHED );
 
         return $email;
-    }
-
-    private function logEvent( Email $email, string $eventName )
-    {
-        $emailEvent = new EmailEvent();
-        $emailEvent->setEmail( $email );
-        $emailEvent->setTimestamp( new \DateTimeImmutable() );
-        $emailEvent->setEvent( $eventName );
-        $this->entityManager->persist( $emailEvent );
-
-        $this->entityManager->flush( $email );
     }
 }

@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: EmailRepository::class)]
-class Email
+class Email implements EventLoggableInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -34,6 +34,11 @@ class Email
     public function __construct()
     {
         $this->emailEvents = new ArrayCollection();
+    }
+
+    public function getEventLogPrefix(): string
+    {
+        return strtolower(self::class);
     }
 
     public function getId(): ?int

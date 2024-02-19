@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Controller\Api;
+namespace App\Controller\Api\User;
 
 use App\Entity\User;
-use App\Repository\EmailRepository;
 use App\Repository\UserRepository;
 use App\Security\EmailVerifier;
 use App\Services\MailerService;
+use App\Services\EventLogService;
 use Doctrine\ORM\EntityManagerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Security\Http\Authentication\AuthenticationSuccessHandler;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -17,7 +17,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 
 #[Route('/api/v1/user')]
-class UserController extends AbstractController
+class RegisterController extends AbstractController
 {
     #[Route('/register', name:'api:user:register', methods:['POST'])]
     public function register(
@@ -28,7 +28,8 @@ class UserController extends AbstractController
         Request $request,
         MailerService $mailerService,
         AuthenticationSuccessHandler $authenticationSuccessHandler,
-        EmailVerifier $emailVerifier
+        EmailVerifier $emailVerifier,
+        EventLogService $eventLogService,
     ): Response
     {
         if ( $user ) {
@@ -70,51 +71,19 @@ class UserController extends AbstractController
         $entityManager->persist( $user );
         $entityManager->flush();
 
-        $signatureComponents = $emailVerifier->getEmailConfirmationContext(
-            'frontend:email-verify',
-            $user
-        );
+        $eventLogService->log( $user, User::EVENT_REGISTERED );
 
         $mailerService->sendToUser(
             MailerService::EMAIL_TYPE_VERIFY_EMAIL,
             $user,
             'Please verify your email address.',
             'emails/email-validation.html.twig',
-            $signatureComponents
+            $emailVerifier->getEmailConfirmationContext(
+                'frontend:email-verify',
+                $user
+            )
         );
 
         return $authenticationSuccessHandler->handleAuthenticationSuccess($user);
-    }
-
-    #[Route('/me', name:'api:user:me', methods:['GET'])]
-    public function registrationStatus(
-        #[CurrentUser] ?User $user,
-        EmailRepository $emailRepository
-    ) {
-        if ( !$user ) {
-            return new Response(json_encode([
-                'user-type' => 'anonymous',
-                'capabilities' => User::getCapabilitiesByRole( 'PUBLIC_ACCESS' ),
-            ]));
-        }
-
-        $payload = $user->jsonSerialize();
-        $payload['user-type'] = 'user';
-        if ( !$user->isEmailValidated() ) {
-            // The user has not verified their email. Return info on where the verification email is in the process
-            $latestInviteEmail = $emailRepository->findOneBy(
-                [
-                    'recipientUser' => $user,
-                    'type' => MailerService::EMAIL_TYPE_VERIFY_EMAIL
-                ],
-                [ 'id' => 'DESC' ]
-            );
-            $payload['invite-email-events'] = [];
-            foreach ( $latestInviteEmail->getEmailEvents() as $emailEvent ) {
-                $payload['invite-email-events'][] = $emailEvent->jsonSerialize();
-            }
-        }
-
-        return new Response(json_encode($payload));
     }
 }

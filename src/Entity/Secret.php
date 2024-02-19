@@ -10,8 +10,13 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table(name:"secret")]
 #[ORM\Index(name:"slug_idx", columns:["slug"])]
 #[ORM\HasLifecycleCallbacks()]
-class Secret
+class Secret implements EventLoggableInterface
 {
+    // Event names
+    const EVENT_CREATED = 'created';
+    const EVENT_READ    = 'read';
+    const EVENT_EXPIRED = 'expired';
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -48,6 +53,11 @@ class Secret
     public function setCreatedOnValue()
     {
         $this->createdOn = new \DateTime();
+    }
+
+    public function getEventLogPrefix(): string
+    {
+        return strtolower(self::class);
     }
 
     public function getId(): ?int

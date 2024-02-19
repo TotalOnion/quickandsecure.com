@@ -12,7 +12,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-class User implements UserInterface, PasswordAuthenticatedUserInterface, JsonSerializable
+class User implements UserInterface, PasswordAuthenticatedUserInterface, JsonSerializable, EventLoggableInterface
 {
     // Capabilities
     const CAPABILITY_SECRET_CREATE         = 'secret.create';
@@ -32,6 +32,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JsonSer
             self::CAPABILITY_SECRET_READ,
         ]
     ];
+
+    // Events
+    const EVENT_REGISTERED               = 'registered';
+    const EVENT_LOGIN                    = 'login';
+    const EVENT_LOGOUT                   = 'logout';
+    const EVENT_PASSWORD_RESET_REQUESTED = 'password.reset-requested';
+    const EVENT_PASSWORD_CHANGED         = 'password.changed';
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -80,6 +87,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JsonSer
         $this->readSecrets = new ArrayCollection();
         $this->sentEmails = new ArrayCollection();
         $this->receivedEmails = new ArrayCollection();
+    }
+
+    public function getEventLogPrefix(): string
+    {
+        return strtolower(self::class);
     }
 
     public function getId(): ?int
