@@ -12,10 +12,18 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\HasLifecycleCallbacks()]
 class Secret implements EventLoggableInterface
 {
+    const DEFAULT_SECRET_TTL          = '7 day';
+
     // Event names
-    const EVENT_CREATED = 'created';
-    const EVENT_READ    = 'read';
-    const EVENT_EXPIRED = 'expired';
+    const EVENT_CREATED               = 'created';
+    const EVENT_READ_REQUESTED        = 'read.requested';
+    const EVENT_READ_OK               = 'read.ok';
+    const EVENT_READ_DENIED           = 'read.denied';
+    const EVENT_DESTROYED             = 'destroyed';
+
+    const DENIED_REASON_DESTROYED     = 'destroyed';
+    const DENIED_REASON_EXPIRED       = 'expired';
+    const DENIED_REASON_NOT_LOGGED_IN = 'not logged in';
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -49,15 +57,25 @@ class Secret implements EventLoggableInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $description = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $title = null;
+
+    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: true)]
+    private ?\DateTimeImmutable $expiresOn = null;
+
     #[ORM\PrePersist]
     public function setCreatedOnValue()
     {
         $this->createdOn = new \DateTime();
+        if ( !$this->expiresOn ) {
+            $now = new \DateTimeImmutable();
+            $this->expiresOn = $now->add( \DateInterval::createFromDateString( self::DEFAULT_SECRET_TTL ) );
+        }
     }
 
     public function getEventLogPrefix(): string
     {
-        return strtolower(self::class);
+        return strtolower(substr(self::class,strrpos(self::class,'\\')+1));
     }
 
     public function getId(): ?int
@@ -169,6 +187,30 @@ class Secret implements EventLoggableInterface
     public function setDescription(?string $description): static
     {
         $this->description = $description;
+
+        return $this;
+    }
+
+    public function getTitle(): ?string
+    {
+        return $this->title;
+    }
+
+    public function setTitle(?string $title): static
+    {
+        $this->title = $title;
+
+        return $this;
+    }
+
+    public function getExpiresOn(): ?\DateTimeImmutable
+    {
+        return $this->expiresOn;
+    }
+
+    public function setExpiresOn(\DateTimeImmutable $expiresOn): static
+    {
+        $this->expiresOn = $expiresOn;
 
         return $this;
     }

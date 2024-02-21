@@ -6,6 +6,7 @@ use App\Entity\Secret;
 use App\Entity\User;
 use App\Repository\SecretRepository;
 use App\Services\EventLogService;
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -53,15 +54,22 @@ class CreateController extends AbstractController
                 $secret->setMustBeLoggedInToRead( $payload->mustBeLoggedInToView ? true : false );
             } else {
                 $secret->setMustBeLoggedInToRead(false);
+                $secret->setExpiresOn( new DateTimeImmutable() );
             }
 
             $entityManager->persist($secret);
             $entityManager->flush();
 
-            $eventLogService->log( $secret, Secret::EVENT_CREATED );
+            $eventLogService->log(
+                $secret,
+                Secret::EVENT_CREATED,
+                [],
+                $request
+            );
 
             return new Response(null, RESPONSE::HTTP_CREATED);
         } catch (\Exception $e) {
+            throw $e;
             return new Response(null, RESPONSE::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -78,12 +86,13 @@ class CreateController extends AbstractController
             return false;
         }
 
-        // Logged in users must also send description, and mustBeLoggedInToView (even if they are empty)
+        // Logged in users must also send description, and expiresOn (even if they are empty)
         if (
             $user
             && (
                 !property_exists($payload, 'description')
                 || !property_exists($payload, 'mustBeLoggedInToView')
+                || !property_exists($payload, 'expiresOn')
             )
         ) {
             return false;

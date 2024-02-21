@@ -8,6 +8,10 @@ use Doctrine\ORM\Mapping as ORM;
 use JsonSerializable;
 
 #[ORM\Entity(repositoryClass: EventLogRepository::class)]
+#[ORM\Index(name:"associated_entity_id_idx", columns:["associated_entity_id"])]
+#[ORM\Index(name:"entity_class_name_idx", columns:["entity_class_name"])]
+#[ORM\Index(name:"event_idx", columns:["event"])]
+#[ORM\Index(name:"timestamp_idx", columns:["timestamp"])]
 #[ORM\HasLifecycleCallbacks()]
 class EventLog implements JsonSerializable
 {

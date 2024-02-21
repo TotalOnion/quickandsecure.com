@@ -38,7 +38,7 @@ class Email implements EventLoggableInterface
 
     public function getEventLogPrefix(): string
     {
-        return strtolower(self::class);
+        return strtolower(substr(self::class,strrpos(self::class,'\\')+1));
     }
 
     public function getId(): ?int
