@@ -42,7 +42,7 @@ class ReadController extends AbstractController
             $eventLogService->log(
                 $secret,
                 Secret::EVENT_READ_DENIED,
-                [ 'reason' => Secret::DENIED_REASON_DESTROYED],
+                [ 'reason' => Secret::DENIED_REASON_DESTROYED ],
                 $request
             );
             $responseData = [
@@ -55,7 +55,7 @@ class ReadController extends AbstractController
             $eventLogService->log(
                 $secret,
                 Secret::EVENT_READ_DENIED,
-                [ 'reason' => Secret::DENIED_REASON_NOT_LOGGED_IN],
+                [ 'reason' => Secret::DENIED_REASON_NOT_LOGGED_IN ],
                 $request
             );
             $responseData = [
