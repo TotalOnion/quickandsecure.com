@@ -5,12 +5,13 @@ namespace App\Entity;
 use App\Repository\SecretRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use JsonSerializable;
 
 #[ORM\Entity(repositoryClass: SecretRepository::class)]
 #[ORM\Table(name:"secret")]
 #[ORM\Index(name:"slug_idx", columns:["slug"])]
 #[ORM\HasLifecycleCallbacks()]
-class Secret implements EventLoggableInterface
+class Secret implements EventLoggableInterface, JsonSerializable
 {
     const DEFAULT_SECRET_TTL          = '7 day';
     const MAX_SECRET_TTL              = '1 year';
@@ -77,6 +78,21 @@ class Secret implements EventLoggableInterface
     public function getEventLogPrefix(): string
     {
         return strtolower(substr(self::class,strrpos(self::class,'\\')+1));
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'id' => $this->id,
+            'slug' => $this->slug,
+            'createdOn' => $this->createdOn,
+            'createdBy' => $this->createdBy->jsonSerialize(),
+            'destroyedOn' => $this->destroyedOn,
+            'description' => $this->description,
+            'expiresOn' => $this->expiresOn,
+            'readBy' => $this->readBy ? $this->readBy->jsonSerialize() : null,
+            'mustBeLoggedInToRead' => $this->mustBeLoggedInToRead,
+        ];
     }
 
     public function getId(): ?int
