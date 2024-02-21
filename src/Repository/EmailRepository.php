@@ -21,7 +21,7 @@ class EmailRepository extends ServiceEntityRepository
         parent::__construct($registry, Email::class);
     }
 
-    public function findOneByIdentifier( string $identifier): ?Email
+    public function findOneByIdentifier( string $identifier ): ?Email
     {
         return $this->createQueryBuilder('e')
             ->andWhere('e.identifier = :val')

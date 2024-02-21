@@ -59,9 +59,6 @@ class Secret implements EventLoggableInterface, JsonSerializable
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $description = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $title = null;
-
     #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $expiresOn = null;
 
@@ -204,18 +201,6 @@ class Secret implements EventLoggableInterface, JsonSerializable
     public function setDescription(?string $description): static
     {
         $this->description = $description;
-
-        return $this;
-    }
-
-    public function getTitle(): ?string
-    {
-        return $this->title;
-    }
-
-    public function setTitle(?string $title): static
-    {
-        $this->title = $title;
 
         return $this;
     }
