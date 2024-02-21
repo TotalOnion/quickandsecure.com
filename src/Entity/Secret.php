@@ -13,6 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
 class Secret implements EventLoggableInterface
 {
     const DEFAULT_SECRET_TTL          = '7 day';
+    const MAX_SECRET_TTL              = '1 year';
 
     // Event names
     const EVENT_CREATED               = 'created';

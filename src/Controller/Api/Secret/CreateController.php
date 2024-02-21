@@ -4,6 +4,7 @@ namespace App\Controller\Api\Secret;
 
 use App\Entity\Secret;
 use App\Entity\User;
+use App\Exception\SecretPayloadException;
 use App\Repository\SecretRepository;
 use App\Services\EventLogService;
 use DateTimeImmutable;
@@ -33,8 +34,12 @@ class CreateController extends AbstractController
             return new Response(null, RESPONSE::HTTP_BAD_REQUEST);
         }
 
-        if ( !$this->payloadIsValid($user, $payload) ) {
-            return new Response(null, RESPONSE::HTTP_BAD_REQUEST);
+        try {
+            if ( !$this->payloadIsValid($user, $payload) ) {
+                return new Response(null, RESPONSE::HTTP_BAD_REQUEST);
+            }
+        } catch ( SecretPayloadException $e ) {
+            return new Response(json_encode(['message' => $e->getMessage()]), RESPONSE::HTTP_BAD_REQUEST);
         }
 
         if ($secretRepository->findOneBySlug($slug)) {
@@ -83,7 +88,7 @@ class CreateController extends AbstractController
             || !preg_match('/^[a-zA-Z0-9\/\r\n+]*={0,2}$/', $payload->data)
             || !preg_match('/^[a-zA-Z0-9\/\r\n+]*={0,2}$/', $payload->iv)
         ) {
-            return false;
+            throw new SecretPayloadException('Malformed or missing data, or iv values');
         }
 
         // Logged in users must also send description, and expiresOn (even if they are empty)
@@ -95,7 +100,24 @@ class CreateController extends AbstractController
                 || !property_exists($payload, 'expiresOn')
             )
         ) {
-            return false;
+            throw new SecretPayloadException('Malformed or missing description, mustBeLoggedInToView, or expiresOn values');
+        }
+
+        if ( $payload->expiresOn ) {
+            $now = new DateTimeImmutable();
+            $expiresOn = new DateTimeImmutable( $payload->expiresOn );
+            if ( $expiresOn < $now ) {
+                throw new SecretPayloadException('Secret expiry date is in the past.');
+            }
+
+            if ( $expiresOn > $now->add( \DateInterval::createFromDateString( Secret::MAX_SECRET_TTL ) ) ) {
+                throw new SecretPayloadException(
+                    sprintf(
+                        'Secret expiry date is too far in the future Max TTL is %s.',
+                        Secret::MAX_SECRET_TTL
+                    )
+                );
+            }
         }
 
         return true;
