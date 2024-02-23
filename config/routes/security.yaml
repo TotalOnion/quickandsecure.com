@@ -4,3 +4,4 @@ _security_logout:
 
 api_login_check:
     path: /api/v1/login
+    methods: ['POST']
