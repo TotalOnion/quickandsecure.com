@@ -61,6 +61,7 @@ class RegisterController extends AbstractController
 
         $user = new User();
         $user->setEmail( $payload->username );
+        $user->setRoles( [ User::ROLE_USER ] );
         
         $hashedPassword = $passwordHasher->hashPassword(
             $user,

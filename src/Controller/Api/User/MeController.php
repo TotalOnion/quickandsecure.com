@@ -7,7 +7,7 @@ use App\Repository\EmailRepository;
 use App\Services\MailerService;
 use App\Services\EventLogService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 
@@ -21,14 +21,14 @@ class MeController extends AbstractController
         EventLogService $eventLogService,
     ) {
         if ( !$user ) {
-            return new Response(json_encode([
-                'user-type' => 'anonymous',
-                'capabilities' => User::getCapabilitiesByRole( 'PUBLIC_ACCESS' ),
-            ]));
+            return new JsonResponse([
+                'user-roles' => [ User::ROLE_PUBLIC_ACCESS ],
+                'capabilities' => User::getCapabilitiesByRole( User::ROLE_PUBLIC_ACCESS ),
+            ]);
         }
 
         $payload = $user->jsonSerialize();
-        $payload['user-type'] = 'user';
+        $payload['user-roles'] = $user->getRoles();
         if ( !$user->isEmailValidated() ) {
             // The user has not verified their email. Return info on where the verification email is in the process
             $latestInviteEmail = $emailRepository->findOneBy(
@@ -47,6 +47,6 @@ class MeController extends AbstractController
             }
         }
 
-        return new Response( json_encode( $payload ) );
+        return new JsonResponse( $payload );
     }
 }

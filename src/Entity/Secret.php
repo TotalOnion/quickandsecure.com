@@ -15,6 +15,7 @@ class Secret implements EventLoggableInterface, JsonSerializable
 {
     const DEFAULT_SECRET_TTL          = '7 day';
     const MAX_SECRET_TTL              = '1 year';
+    const DEFAULT_SORT                = [ 'createdOn' => 'DESC' ];
 
     // Event names
     const EVENT_CREATED               = 'created';

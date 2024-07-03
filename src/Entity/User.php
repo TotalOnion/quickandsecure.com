@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Mapping;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -14,6 +15,18 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface, JsonSerializable, EventLoggableInterface
 {
+    // Roles
+    const ROLE_PUBLIC_ACCESS = 'ROLE_PUBLIC_ACCESS';
+    const ROLE_USER          = 'ROLE_USER';
+    const ROLE_ADMIN         = 'ROLE_ADMIN';
+    const ROLE_SUPER_ADMIN   = 'ROLE_SUPER_ADMIN';
+    const VALID_ROLES        = [
+        self::ROLE_PUBLIC_ACCESS,
+        self::ROLE_USER,
+        self::ROLE_ADMIN,
+        self::ROLE_SUPER_ADMIN,
+    ];
+
     // Capabilities
     const CAPABILITY_SECRET_CREATE         = 'secret.create';
     const CAPABILITY_SECRET_SET_OWN_TITLE  = 'secret.create.set-own-title';
@@ -21,11 +34,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JsonSer
     const CAPABILITY_SECRET_READ           = 'secret.read';
 
     const CAPABILITIES = [
-        'PUBLIC_ACCESS' => [
+        self::ROLE_PUBLIC_ACCESS => [
             self::CAPABILITY_SECRET_CREATE,
             self::CAPABILITY_SECRET_READ,
         ],
-        'ROLE_USER' => [
+        self::ROLE_USER => [
             self::CAPABILITY_SECRET_CREATE,
             self::CAPABILITY_SECRET_SET_OWN_TITLE,
             self::CAPABILITY_SECRET_SET_OWN_EXPIRY,
@@ -40,11 +53,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JsonSer
     const EVENT_PASSWORD_RESET_REQUESTED = 'password.reset-requested';
     const EVENT_PASSWORD_CHANGED         = 'password.changed';
 
+    #[Mapping\CanBeOrderedOn]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Mapping\CanBeOrderedOn]
     #[ORM\Column(length: 180, unique: true)]
     #[Assert\Email(
         message: 'The specified email is not valid.',
@@ -68,7 +83,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JsonSer
 
     #[ORM\OneToMany(mappedBy: 'readBy', targetEntity: Secret::class)]
     private Collection $readSecrets;
-
+    
+    #[Mapping\CanBeOrderedOn]
     #[ORM\Column(nullable: true)]
     private ?bool $emailValidated = null;
 
@@ -138,6 +154,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JsonSer
         $this->roles = $roles;
 
         return $this;
+    }
+
+    public function hasRole( string $role ): bool
+    {
+        return in_array( $role, $this->roles );
     }
 
     /**
