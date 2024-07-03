@@ -3,6 +3,7 @@
 namespace App\Controller\Api\User;
 
 use App\Entity\User;
+use App\Exception\ApiQueryStringException;
 use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -30,10 +31,14 @@ class ListController extends AbstractController
         }
 
         try {
-            //$users = $userRepository->findAll();
             $users = $userRepository->findBy(
                 [],
                 $userRepository->parseOrderBy( $request )
+            );
+        } catch( ApiQueryStringException $e ) {
+            return new JsonResponse(
+                [ 'error' => $e->getMessage() ],
+                Response::HTTP_BAD_REQUEST
             );
         } catch ( \Exception $e ) {
             throw $e;
@@ -41,9 +46,9 @@ class ListController extends AbstractController
 
         return new JsonResponse(
             $users,
-            RESPONSE::HTTP_OK,
+            Response::HTTP_OK,
             [
-                'Content-Range' => 1,
+                'Content-Range' => count( $users ),
                 'Access-Control-Expose-Headers' => 'Content-Range'
             ]
         );

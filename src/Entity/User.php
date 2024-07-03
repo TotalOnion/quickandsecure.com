@@ -60,6 +60,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JsonSer
     private ?int $id = null;
 
     #[Mapping\CanBeOrderedOn]
+    #[Mapping\DefaultOrderOnField('ASC')]
     #[ORM\Column(length: 180, unique: true)]
     #[Assert\Email(
         message: 'The specified email is not valid.',
