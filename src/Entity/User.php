@@ -61,6 +61,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JsonSer
 
     #[Mapping\CanBeOrderedOn]
     #[Mapping\DefaultOrderOnField('ASC')]
+    #[Mapping\CanBeFilteredOn]
     #[ORM\Column(length: 180, unique: true)]
     #[Assert\Email(
         message: 'The specified email is not valid.',
@@ -86,6 +87,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JsonSer
     private Collection $readSecrets;
     
     #[Mapping\CanBeOrderedOn]
+    #[Mapping\CanBeFilteredOn]
     #[ORM\Column(nullable: true)]
     private ?bool $emailValidated = null;
 

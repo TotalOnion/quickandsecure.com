@@ -11,10 +11,57 @@ trait ListQueryParamParserTrait
     const MAX_RETURNED_RESULTS = 1000;
 
     private array $validOrderOnFields     = [];
+    private array $validFilterOnFields    = [];
     private string $defaultOrderOnField   = '';
     private string $defaultOrderDirection = Mapping\DefaultOrderOnField::ORDER_DIRECTION_WHEN_NONE_IS_SET;
     private ?int $limit = null;
     private ?int $offset = null;
+
+    public function parseFilter( Request $request ): array
+    {
+        if ( ! $request->query->get('filter') ) {
+            return [];
+        }
+
+        $filterObject = json_decode( $request->query->get('filter'), true );
+
+        if ( json_last_error() !== JSON_ERROR_NONE ) {
+            throw new ApiQueryStringException(
+                'Malformed "filter" parameter. Correct format is filter={"foo":"bar","baz":true}'
+            );
+        }
+
+        if ( ! $this->validFilterOnFields ) {
+            $this->findPropertiesFromEntityClass();
+        }
+
+        foreach ( $filterObject as $filterField => $value ) {
+            // Check if the requested filter field is one we are allowed to filter on
+            if ( ! array_key_exists( $filterField, $this->validFilterOnFields ) ) {
+                throw new ApiQueryStringException(
+                    sprintf(
+                        'Invalid filter key of "%s". Accepted keys are %s',
+                        $filterField,
+                        implode( ', ', array_keys( $this->validFilterOnFields ) )
+                    )
+                );
+            }
+
+            // Check that the value type is the same (test bool against bool, string against string etc)
+            if ( gettype( $value ) !== $this->validFilterOnFields[ $filterField ] ) {
+                throw new ApiQueryStringException(
+                    sprintf(
+                        'filter "%s". Expects a value of type %s, but %s was received.',
+                        $filterField,
+                        $this->validFilterOnFields[ $filterField ],
+                        gettype( $value )
+                    )
+                );
+            }
+        }
+
+        return $filterObject;
+    }
 
     public function parseLimit( Request $request ):int
     {
@@ -126,7 +173,7 @@ trait ListQueryParamParserTrait
     public function getValidOrderByFields():array
     {
         if ( empty( $this->validOrderOnFields ) ) {
-            $this->findOrderablePropertiesFromEntityClass();
+            $this->findPropertiesFromEntityClass();
         }
 
         return $this->validOrderOnFields;
@@ -167,9 +214,9 @@ trait ListQueryParamParserTrait
     }
 
     /**
-     * Use reflection to look for any class properties marked as CanBeOrderedOn
+     * Use reflection to look for any class properties marked as CanBeOrderedOn, or CanBeFilteredOn
      */
-    private function findOrderablePropertiesFromEntityClass():void
+    private function findPropertiesFromEntityClass():void
     {
         $this->validOrderOnFields = [];
 
@@ -177,6 +224,16 @@ trait ListQueryParamParserTrait
         foreach ($reflectionClass->getProperties() as $property) {
             if ( $property->getAttributes( Mapping\CanBeOrderedOn::class ) ) {
                 $this->validOrderOnFields[] = $property->getName();
+            }
+
+            if ( $property->getAttributes( Mapping\CanBeFilteredOn::class ) ) {
+                $propertyVariableType = $property->getType()->getName();
+                // gettype() uses "boolean" not "bool", so fix that here.
+                if ( $propertyVariableType === 'bool' ) {
+                    $propertyVariableType = 'boolean';
+                }
+
+                $this->validFilterOnFields[ $property->getName() ] = $propertyVariableType;
             }
         }
     }

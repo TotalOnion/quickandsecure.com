@@ -31,8 +31,9 @@ class ListController extends AbstractController
         }
 
         try {
+            $userRepository->parseFilter( $request );
             $users = $userRepository->findBy(
-                [],
+                $userRepository->parseFilter( $request ),
                 $userRepository->parseOrderBy( $request ),
                 $userRepository->parseLimit( $request ),
                 $userRepository->parseOffset( $request )
