@@ -33,7 +33,9 @@ class ListController extends AbstractController
         try {
             $users = $userRepository->findBy(
                 [],
-                $userRepository->parseOrderBy( $request )
+                $userRepository->parseOrderBy( $request ),
+                $userRepository->parseLimit( $request ),
+                $userRepository->parseOffset( $request )
             );
         } catch( ApiQueryStringException $e ) {
             return new JsonResponse(

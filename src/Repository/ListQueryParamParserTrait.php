@@ -8,10 +8,61 @@ use Symfony\Component\HttpFoundation\Request;
 
 trait ListQueryParamParserTrait
 {
+    const MAX_RETURNED_RESULTS = 1000;
+
     private array $validOrderOnFields     = [];
     private string $defaultOrderOnField   = '';
     private string $defaultOrderDirection = Mapping\DefaultOrderOnField::ORDER_DIRECTION_WHEN_NONE_IS_SET;
+    private ?int $limit = null;
+    private ?int $offset = null;
 
+    public function parseLimit( Request $request ):int
+    {
+        if ( ! $this->limit ) {
+            $this->parseLimitAndOffset( $request );
+        }
+
+        return $this->limit;
+    }
+
+    public function parseOffset( Request $request ):int
+    {
+        if ( ! $this->offset ) {
+            $this->parseLimitAndOffset( $request );
+        }
+
+        return $this->offset;
+    }
+
+    private function parseLimitAndOffset( Request $request ): void
+    {
+        if ( $request->query->get('range') ) {
+            list($this->offset, $this->limit) = json_decode( $request->query->get('range') );
+
+            if ( json_last_error() !== JSON_ERROR_NONE ) {
+                throw new ApiQueryStringException(
+                    'Malformed "range" parameter. Correct format is range=[0, 24]'
+                );
+            }
+
+            if ( $this->offset < 0 || $this->limit < 0 ) {
+                throw new ApiQueryStringException( 'Offset and range cannot be negative.' );
+            }
+
+            if ( $this->limit > self::MAX_RETURNED_RESULTS ) {
+                throw new ApiQueryStringException( sprintf( 'Range cannot exceed %d.', self::MAX_RETURNED_RESULTS ) );
+            }
+        }
+
+        if ( ! $this->offset ) {
+            $this->offset = 0;
+        }
+
+        if ( ! $this->limit ) {
+            $this->limit = 20;
+        }
+    }
+    
     public function parseOrderBy( Request $request ):array
     {
         $orderOn = null;
