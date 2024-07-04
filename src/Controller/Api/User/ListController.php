@@ -31,9 +31,9 @@ class ListController extends AbstractController
         }
 
         try {
-            $userRepository->parseFilter( $request );
+            $criteria = $userRepository->parseFilter( $request );
             $users = $userRepository->findBy(
-                $userRepository->parseFilter( $request ),
+                $criteria,
                 $userRepository->parseOrderBy( $request ),
                 $userRepository->parseLimit( $request ),
                 $userRepository->parseOffset( $request )
@@ -44,14 +44,17 @@ class ListController extends AbstractController
                 Response::HTTP_BAD_REQUEST
             );
         } catch ( \Exception $e ) {
-            throw $e;
+            return new JsonResponse(
+                [ 'error' => $e->getMessage() ],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
         }
 
         return new JsonResponse(
             $users,
             Response::HTTP_OK,
             [
-                'Content-Range' => count( $users ),
+                'Content-Range' => $userRepository->count( $criteria ),
                 'Access-Control-Expose-Headers' => 'Content-Range'
             ]
         );

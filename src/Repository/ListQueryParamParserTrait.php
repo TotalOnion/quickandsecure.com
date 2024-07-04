@@ -14,8 +14,8 @@ trait ListQueryParamParserTrait
     private array $validFilterOnFields    = [];
     private string $defaultOrderOnField   = '';
     private string $defaultOrderDirection = Mapping\DefaultOrderOnField::ORDER_DIRECTION_WHEN_NONE_IS_SET;
-    private ?int $limit = null;
-    private ?int $offset = null;
+    private ?int $limit                   = null;
+    private ?int $offset                  = null;
 
     public function parseFilter( Request $request ): array
     {
