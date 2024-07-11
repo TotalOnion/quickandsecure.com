@@ -35,32 +35,81 @@ trait ListQueryParamParserTrait
             $this->findPropertiesFromEntityClass();
         }
 
-        foreach ( $filterObject as $filterField => $value ) {
+        foreach ( $filterObject as $filterKey => $value ) {
             // Check if the requested filter field is one we are allowed to filter on
-            if ( ! array_key_exists( $filterField, $this->validFilterOnFields ) ) {
-                throw new ApiQueryStringException(
-                    sprintf(
-                        'Invalid filter key of "%s". Accepted keys are %s',
-                        $filterField,
-                        implode( ', ', array_keys( $this->validFilterOnFields ) )
-                    )
-                );
-            }
+            $this->validateRequestedFilterKey( $filterKey );
+            
 
             // Check that the value type is the same (test bool against bool, string against string etc)
-            if ( gettype( $value ) !== $this->validFilterOnFields[ $filterField ] ) {
-                throw new ApiQueryStringException(
-                    sprintf(
-                        'filter "%s". Expects a value of type %s, but %s was received.',
-                        $filterField,
-                        $this->validFilterOnFields[ $filterField ],
-                        gettype( $value )
-                    )
-                );
-            }
+            $this->validateFilterComparisonValue( $filterKey, $value );
         }
 
         return $filterObject;
+    }
+
+    /**
+     * Check to see if a filterKey is in the list of allowed filter keys
+     */
+    private function validateRequestedFilterKey( string $filterKey ):void
+    {
+        if ( ! array_key_exists( $filterKey, $this->validFilterOnFields ) ) {
+            throw new ApiQueryStringException(
+                sprintf(
+                    'Invalid filter key of "%s". Accepted keys are %s',
+                    $filterKey,
+                    implode( ', ', array_keys( $this->validFilterOnFields ) )
+                )
+            );
+        }
+    }
+
+    private function validateFilterComparisonValue(
+        string $filterKey,
+        mixed $comparisonValue
+    ):void {
+        $filterDefinition = $this->validFilterOnFields[ $filterKey ];
+        $comparisonValueType = gettype( $comparisonValue );
+
+        if ( $filterDefinition['canAcceptAnArray'] ) {
+            // we _can_ accept an arry, but they've passed in just one of the right type
+            if ( $comparisonValueType === $filterDefinition['expectedFieldType'] ) {
+                return;
+            }
+
+            if ( ! is_array( $comparisonValue ) ) {
+                throw new ApiQueryStringException(
+                    sprintf(
+                        'filter "%s". Expects a value of type %s or %s[], but %s was received.',
+                        $filterKey,
+                        $filterDefinition['expectedFieldType'],
+                        $filterDefinition['expectedFieldType'],
+                        $comparisonValueType
+                    )
+                );
+            }
+
+            foreach( $comparisonValue as $value ) {
+                if ( gettype( $value ) !== $filterDefinition['expectedFieldType'] ) {
+                    throw new ApiQueryStringException(
+                        sprintf(
+                            'Bad value in filter "%s". While this filter does accept an array, one or more of the values passed was of the type %s when %s was expected.',
+                            $filterKey,
+                            gettype( $value ),
+                            $filterDefinition['expectedFieldType']
+                        )
+                    );
+                }
+            }
+        } elseif ( $comparisonValueType !== $filterDefinition['expectedFieldType'] ) {
+            throw new ApiQueryStringException(
+                sprintf(
+                    'filter "%s". Expects a value of type %s, but %s was received.',
+                    $filterKey,
+                    $filterDefinition['expectedFieldType'],
+                    $comparisonValueType
+                )
+            );
+        }
     }
 
     public function parseLimit( Request $request ):int
@@ -226,14 +275,24 @@ trait ListQueryParamParserTrait
                 $this->validOrderOnFields[] = $property->getName();
             }
 
-            if ( $property->getAttributes( Mapping\CanBeFilteredOn::class ) ) {
+            foreach ( $property->getAttributes( Mapping\CanBeFilteredOn::class ) as $attribute ) {
+                $canBeFilteredOnAttribute = $attribute->newInstance();
                 $propertyVariableType = $property->getType()->getName();
-                // gettype() uses "boolean" not "bool", so fix that here.
-                if ( $propertyVariableType === 'bool' ) {
-                    $propertyVariableType = 'boolean';
+                // gettype() uses different names for some var types. Fix them here
+                switch ( $propertyVariableType ) {
+                    case 'bool':
+                        $propertyVariableType = 'boolean';
+                        break;
+
+                    case 'int':
+                        $propertyVariableType = 'integer';
+                        break;       
                 }
 
-                $this->validFilterOnFields[ $property->getName() ] = $propertyVariableType;
+                $this->validFilterOnFields[ $property->getName() ] = [
+                    'expectedFieldType' => $propertyVariableType,
+                    'canAcceptAnArray'  => $canBeFilteredOnAttribute->canAcceptAnArray(),
+                ];
             }
         }
     }

@@ -54,6 +54,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JsonSer
     const EVENT_PASSWORD_CHANGED         = 'password.changed';
 
     #[Mapping\CanBeOrderedOn]
+    #[Mapping\CanBeFilteredOn(Mapping\CanBeFilteredOn::ACCEPTS_AN_ARRAY)]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -61,7 +62,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JsonSer
 
     #[Mapping\CanBeOrderedOn]
     #[Mapping\DefaultOrderOnField('ASC')]
-    #[Mapping\CanBeFilteredOn]
+    #[Mapping\CanBeFilteredOn(Mapping\CanBeFilteredOn::ACCEPTS_AN_ARRAY)]
     #[ORM\Column(length: 180, unique: true)]
     #[Assert\Email(
         message: 'The specified email is not valid.',
